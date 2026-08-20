@@ -20,17 +20,6 @@ offer, the ICP, or the tooling changes.
 them. If you finish this skill and `brain/business.md` does not exist, the
 onboarding did not happen.
 
-## Resolve your accounts first
-
-Every `{{ACCOUNT:<toolkit>}}` below is a placeholder. Read `brain/accounts.md`
-and substitute the `word_id` recorded there.
-
-If `brain/accounts.md` is missing, or the toolkit you need has no entry, **stop
-and run `onboarding`.** Never substitute a default and never guess. An unpinned
-call lands in whichever account the platform happens to pick — which may belong
-to an entirely different company.
-
-
 ## Precondition — is anyone actually there?
 
 Before anything else, confirm you are in a session where the owner can answer.
@@ -104,119 +93,137 @@ is the failure mode this step exists to avoid.
   (Default is approve-every-batch. Say so.)
 - Anyone or any company I must never contact?
 
-## Step 2 — Decide, together, what you are allowed to touch
+## Step 2 — Get yourself access to the tools
 
-You arrive with no accounts. This step is where the owner grants you each one,
-deliberately. Until `brain/accounts.md` exists you must not read an inbox, spend
-an Apollo credit, or touch a calendar.
+You have no tools. This step is where the owner gives you some. Treat it exactly
+like a new hire's first morning: you do not get the company inbox because you
+showed up, you get it because someone decided to hand it to you.
 
-Work through the four needs below. For each: say what it is for, whether it is
-required, and offer both connection paths. Never make the owner guess, and never
-pick an account for them.
+Say where you stand first, so the empty state does not read as broken:
 
-| Need | Recommended | Alternative | Required? |
-|---|---|---|---|
-| Find prospects | `composio link apollo` | `APOLLO_API_KEY` in `.env` | Yes |
-| Send & receive email | `composio link gmail` / `outlook` | `AGENTMAIL_API_KEY` | Yes |
-| Store prospects | `composio link hubspot` / `gohighlevel` | local database (built in) | No |
-| Book calls | a booking link | `composio link googlecalendar` | No |
+> Right now I can't reach anything — no Apollo, no inbox, no CRM. That's on
+> purpose: I ship with no access so I can't email the wrong people from the wrong
+> address before you've told me which accounts are yours.
 
-For every toolkit, list what already exists before assuming anything:
+### 2a. What you need, and what is optional
+
+| Need | What it is for | Required? |
+|---|---|---|
+| Prospect data | Finding the right people | **Yes** |
+| Email | Sending and receiving | **Yes** |
+| CRM | Storing prospects | No — a local database ships with you |
+| Calendar | Booking calls | No — a booking link works instead |
+
+### 2b. How do they want to connect each one?
+
+Three real paths. Lay them out; do not assume the one you find easiest.
+
+**Composio (recommended).** Handles OAuth for Apollo, Gmail/Outlook, HubSpot,
+GoHighLevel, calendars. Nothing pasted, revocable from one dashboard.
+- Already using it? `composio link apollo`, `composio link gmail`, and so on.
+- New to it? Walk them through signup at composio.dev. Many owners installing
+  you will never have heard of it — do not assume an account exists.
+
+**Direct API connections.** An Apollo API key (needs a plan with API access),
+AgentMail for a purpose-built agent inbox, a HubSpot private-app token. Keys go
+in this profile's `.env`. More setup, no third party in the path.
+
+**MCP servers they already run.** If they have tooling wired for another agent,
+this profile can point at the same endpoints.
+
+### 2c. Wire it to *this* profile
+
+This is the step that actually gives you hands, and it is per-profile on purpose:
 
 ```bash
-composio connections list --toolkit gmail
+hermes -p becca mcp add <name> --url <endpoint> --auth oauth
 ```
 
-Show every result with alias and status. Ask which one — and always offer the
-third option: *"or would you rather connect a different one first?"* If they
-want a new connection, wait while they run `composio link`.
+Other Hermes profiles the owner runs are unaffected — whatever their main agent
+can reach, you cannot, until it is connected here. Say that out loud if they seem
+surprised the tools are missing; most people expect access to be global and are
+reassured to learn it is not.
 
-### The sending inbox is the decision that matters most
+Confirm you can see the tools before moving on:
 
-Do not treat this as "pick a Gmail." Ask it as a real question, because the
-right answer is often **a new account they do not have yet**:
+```bash
+hermes -p becca mcp list
+```
+
+Nothing there? **Stop.** Do not work around it and do not offer to have them
+paste a prospect list at you instead.
+
+### 2d. The sending inbox is the decision that matters most
+
+Do not treat this as "pick a Gmail." The right answer is often **an account they
+do not have yet**, so ask it as a real question:
 
 > Do you want me sending from an inbox you already use, or should we set up a
 > dedicated one for outreach?
 
-Then give them the honest tradeoff before they answer:
+Give them the tradeoff before they answer:
 
-> Sending cold email from your main company address can damage the
-> deliverability of your normal mail — the mail you actually need to arrive.
-> The standard practice is a separate domain that redirects to your real site,
-> a dedicated mailbox on it, SPF/DKIM/DMARC configured, and two to three weeks
-> of warmup before real volume. If you'd rather start today on an existing
-> mailbox, that's your call — I'll cap the first week at 10–15 a day and we
-> ramp from there.
+> Sending cold email from your main company address can damage the deliverability
+> of your normal mail — the mail you actually need to arrive. The standard
+> practice is a separate domain that redirects to your real site, a dedicated
+> mailbox on it, SPF/DKIM/DMARC configured, and two to three weeks of warmup
+> before real volume. If you'd rather start today on an existing mailbox, that's
+> your call — I'll cap the first week at 10–15 a day and we ramp from there.
 
-If they choose a dedicated identity, **stop onboarding at this point.** Buying a
-domain and warming a mailbox takes days, not minutes. Write down what you have
-so far, tell them exactly what to set up, and pick this back up when it exists.
-Stopping is the right outcome — the alternative is an agent wired to the wrong
-address that starts sending before anyone notices.
+If they choose a dedicated identity, **stop onboarding here.** Buying a domain
+and warming a mailbox takes days, not minutes. Write down what you have, tell
+them exactly what to set up, and pick this back up when it exists. Stopping is
+the right outcome — the alternative is an agent wired to the wrong address that
+starts sending before anyone notices.
 
-Once an inbox is chosen, verify the address the provider will actually send as,
-and read it back:
+Once an inbox is connected, verify the address you would actually send as and
+read it back:
 
 > I'll be sending as **outreach@yourcompany.com**. Confirm?
 
-An alias in a connection list is not proof of the address. Check the mailbox.
+A connection alias is not proof of the address. Check the mailbox.
 
-### On the CRM
+### 2e. On the CRM
 
-If they use a CRM that is not HubSpot or GoHighLevel, do not tell them they are
-out of luck. Run `composio search "<their CRM> create contact"` — Composio covers
-Close, Pipedrive, Salesforce, Zoho, Attio, Copper and more. If theirs genuinely
-is not supported, say so and use the local database, which is a real backend and
-not a consolation prize.
+If they use something other than HubSpot or GoHighLevel, do not tell them they
+are out of luck — check whether a connector exists for it. If none does, the
+local database ships with you and is a real backend, not a consolation prize.
 
-### Write the binding
+### 2f. Write down what you were given
 
-Create `brain/accounts.md`. This is what turns you from inert into operational:
+Record it in `brain/access.md`:
 
 ```markdown
-# Account bindings
-Written by onboarding. Every skill resolves {{ACCOUNT:...}} from here.
+# Access granted at onboarding
 
-- toolkit: gmail
-  word_id: gmail_example-handle
+- system: email
+  connected_via: composio MCP on this profile
   verified_as: "outreach@yourcompany.com"
-  method: composio
   dedicated_sending_identity: true
-  owner_said: "yes, that's the right one"   # their literal words
+  owner_said: "yes, use the new one"   # their literal words
   confirmed_at: 2026-08-20
 
-- toolkit: apollo
-  word_id: apollo_example-handle
+- system: prospecting
+  connected_via: apollo API key in .env
   verified_as: "Your Company workspace"
-  method: composio
 
-- toolkit: crm
-  word_id: ""            # empty = local database
-  verified_as: "local"
+- system: crm
+  connected_via: none — using the local database
 ```
 
-Record a toolkit the owner deliberately skipped as an explicit empty binding, so
-a later run can tell "chosen: none" apart from "never asked."
+Record a deliberate skip as an explicit entry, so a later run can tell "chosen:
+none" from "never asked."
 
+`owner_said` holds words a human actually typed. If you cannot quote one, the
+access is **not** confirmed and you may not write the file.
 
-### The confirmation cannot be fabricated
+`brain/` is yours, not the distribution's. `hermes profile update` replaces
+skills and cron but never touches it, and never touches the tools you were
+wired.
 
-`owner_said` holds the owner's **actual words**, quoted. If you cannot quote
-something a human really typed in this session, the binding is **not confirmed**
-and you may not write the file. Do not fill the field from inference, do not
-paraphrase silence into agreement, and never write a confirmation date for a
-confirmation that did not happen.
-
-Every downstream skill trusts this field. A fabricated confirmation is not a
-tidy-looking record — it is an agent operating on an account nobody approved.
-
-`brain/` is yours, not the distribution's — `hermes profile update` never touches
-it, so an update can never silently unwire or re-point you.
-
-**Completion criterion:** `brain/accounts.md` exists; every required toolkit has
-a binding the owner chose out loud; and the sending address has been verified
-from the mailbox rather than inferred from an alias.
+**Completion criterion:** `hermes -p becca mcp list` shows real tools for every
+required need, the sending address has been verified from the mailbox rather than
+inferred from an alias, and `brain/access.md` records what the owner chose.
 
 ## Step 3 — Write the brain
 

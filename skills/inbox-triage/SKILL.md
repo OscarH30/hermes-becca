@@ -15,23 +15,19 @@ metadata:
 A reply is the whole point. Handle it faster and better than the sequence that
 earned it.
 
-Read the `gmail` binding from `brain/accounts.md` and pass `--account {{ACCOUNT:gmail}}` on
-every call. Empty → stop and run `onboarding`. Reading the wrong inbox wastes a
-run; replying from it is worse.
+## Check your tools before you start
 
-## Resolve your accounts first
+You reach Apollo, the inbox, the CRM, and the calendar through whatever
+onboarding wired into this profile — MCP servers, or documented APIs using keys
+in `.env`. Look at what you actually have.
 
-Every `{{ACCOUNT:<toolkit>}}` below is a placeholder. Read `brain/accounts.md`
-and substitute the `word_id` recorded there.
+**Missing a tool this skill needs → stop and run `onboarding`.** Do not fall back
+to a CLI you happen to find on the shell. A tool nobody granted you is a tool
+pointed at an account nobody chose, and cold email from the wrong mailbox cannot
+be recalled.
 
-If `brain/accounts.md` is missing, or the toolkit you need has no entry, **stop
-and run `onboarding`.** Never substitute a default and never guess.
-
-A binding without an `owner_said` quote is **not** a valid binding — treat it as
-absent. It means something wrote the file without a human confirming it. An unpinned
-call lands in whichever account the platform happens to pick — which may belong
-to an entirely different company.
-
+Tool names below are the common Composio slugs. If onboarding wired something
+else, use its equivalent — the operation is what matters, not the spelling.
 
 ## Order of operations — do not reorder
 

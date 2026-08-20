@@ -15,19 +15,19 @@ metadata:
 This skill is the orchestration. `cold-email` writes the words; this decides who
 gets them, when, and whether they go out at all.
 
-## Resolve your accounts first
+## Check your tools before you start
 
-Every `{{ACCOUNT:<toolkit>}}` below is a placeholder. Read `brain/accounts.md`
-and substitute the `word_id` recorded there.
+You reach Apollo, the inbox, the CRM, and the calendar through whatever
+onboarding wired into this profile — MCP servers, or documented APIs using keys
+in `.env`. Look at what you actually have.
 
-If `brain/accounts.md` is missing, or the toolkit you need has no entry, **stop
-and run `onboarding`.** Never substitute a default and never guess.
+**Missing a tool this skill needs → stop and run `onboarding`.** Do not fall back
+to a CLI you happen to find on the shell. A tool nobody granted you is a tool
+pointed at an account nobody chose, and cold email from the wrong mailbox cannot
+be recalled.
 
-A binding without an `owner_said` quote is **not** a valid binding — treat it as
-absent. It means something wrote the file without a human confirming it. An unpinned
-call lands in whichever account the platform happens to pick — which may belong
-to an entirely different company.
-
+Tool names below are the common Composio slugs. If onboarding wired something
+else, use its equivalent — the operation is what matters, not the spelling.
 
 ## Step 1 — Assemble the batch
 
@@ -86,14 +86,8 @@ segment.
 
 ## Step 4 — Send
 
-**Confirm the outbound identity first.** Read the `gmail` binding and `sending_address` from `brain/accounts.md`. If either is empty, stop — do not send
-from a default account. Owners often have several mailboxes connected, and cold
-email from the wrong one reaches real people from an address that never agreed
-to send it. Verify the address the provider will actually send as, and that it
-matches `sending_address`. A mismatch stops the run.
-
 Send through the configured provider — Gmail/Outlook via Composio (always with
-`--account {{ACCOUNT:gmail}}`), or AgentMail.
+``), or AgentMail.
 
 - Space sends across the `send_window`. Do not fire 20 emails in 40 seconds;
   it is the most obvious automation signal there is.

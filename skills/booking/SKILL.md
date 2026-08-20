@@ -15,19 +15,19 @@ metadata:
 The moment someone says yes, every extra step loses some of them. Your job is to
 remove the steps.
 
-## Resolve your accounts first
+## Check your tools before you start
 
-Every `{{ACCOUNT:<toolkit>}}` below is a placeholder. Read `brain/accounts.md`
-and substitute the `word_id` recorded there.
+You reach Apollo, the inbox, the CRM, and the calendar through whatever
+onboarding wired into this profile — MCP servers, or documented APIs using keys
+in `.env`. Look at what you actually have.
 
-If `brain/accounts.md` is missing, or the toolkit you need has no entry, **stop
-and run `onboarding`.** Never substitute a default and never guess.
+**Missing a tool this skill needs → stop and run `onboarding`.** Do not fall back
+to a CLI you happen to find on the shell. A tool nobody granted you is a tool
+pointed at an account nobody chose, and cold email from the wrong mailbox cannot
+be recalled.
 
-A binding without an `owner_said` quote is **not** a valid binding — treat it as
-absent. It means something wrote the file without a human confirming it. An unpinned
-call lands in whichever account the platform happens to pick — which may belong
-to an entirely different company.
-
+Tool names below are the common Composio slugs. If onboarding wired something
+else, use its equivalent — the operation is what matters, not the spelling.
 
 ## Three paths, in order of preference
 
@@ -42,7 +42,7 @@ owner already configured in Calendly or Cal.com. Do not over-engineer past this.
 Better for senior prospects, who often will not click a scheduling link.
 
 ```bash
-composio execute "GOOGLECALENDAR_FIND_FREE_SLOTS" --account {{ACCOUNT:googlecalendar}} -d '{...}'
+composio execute "GOOGLECALENDAR_FIND_FREE_SLOTS" -d '{...}'
 ```
 
 Use `accounts.googlecalendar` from `brain/config.md`; never the default — with

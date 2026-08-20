@@ -14,21 +14,19 @@ metadata:
 
 One interface, four backends. Read `crm:` in `brain/config.md` to know which.
 
-Pass `--account` from `accounts.crm` in `brain/config.md` on every CRM call.
+## Check your tools before you start
 
-## Resolve your accounts first
+You reach Apollo, the inbox, the CRM, and the calendar through whatever
+onboarding wired into this profile — MCP servers, or documented APIs using keys
+in `.env`. Look at what you actually have.
 
-Every `{{ACCOUNT:<toolkit>}}` below is a placeholder. Read `brain/accounts.md`
-and substitute the `word_id` recorded there.
+**Missing a tool this skill needs → stop and run `onboarding`.** Do not fall back
+to a CLI you happen to find on the shell. A tool nobody granted you is a tool
+pointed at an account nobody chose, and cold email from the wrong mailbox cannot
+be recalled.
 
-If `brain/accounts.md` is missing, or the toolkit you need has no entry, **stop
-and run `onboarding`.** Never substitute a default and never guess.
-
-A binding without an `owner_said` quote is **not** a valid binding — treat it as
-absent. It means something wrote the file without a human confirming it. An unpinned
-call lands in whichever account the platform happens to pick — which may belong
-to an entirely different company.
-
+Tool names below are the common Composio slugs. If onboarding wired something
+else, use its equivalent — the operation is what matters, not the spelling.
 
 ## The rule that matters most
 
@@ -49,12 +47,12 @@ report the backlog at the end of the run. Never drop the record.
 present. A complete backend, not a placeholder: it holds prospects, sends,
 replies, and status history.
 
-**`hubspot`** — `composio execute "HUBSPOT_CREATE_CONTACT" --account {{ACCOUNT:crm}}` etc., or the REST API
+**`hubspot`** — `composio execute "HUBSPOT_CREATE_CONTACT"` etc., or the REST API
 with `HUBSPOT_ACCESS_TOKEN`. Map: prospect → Contact, company → Company, each
 send → an Email engagement on the contact timeline. Set `lifecyclestage` to
 `lead` on create.
 
-**`gohighlevel`** — `composio execute "GOHIGHLEVEL_CREATE_CONTACT" --account {{ACCOUNT:crm}}`, or the REST
+**`gohighlevel`** — `composio execute "GOHIGHLEVEL_CREATE_CONTACT"`, or the REST
 API with `GHL_API_KEY` + `GHL_LOCATION_ID`. Map: prospect → Contact with tags,
 status → pipeline stage, each send → a note. GHL requires the location ID on
 every call; if it is missing, stop and ask rather than writing into the wrong
