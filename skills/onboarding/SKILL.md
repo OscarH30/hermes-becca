@@ -31,6 +31,19 @@ call lands in whichever account the platform happens to pick — which may belon
 to an entirely different company.
 
 
+## Precondition — is anyone actually there?
+
+Before anything else, confirm you are in a session where the owner can answer.
+
+If this is a cron run, a one-shot (`-z`), a scheduled job, or any context where
+your questions cannot reach a human, **stop now**. Write nothing. Bind nothing.
+Report: *"Onboarding needs an interactive session — run `<agent> chat` and say
+'onboard me'."*
+
+Every step below depends on a real answer from a real person. Proceeding without
+one produces a binding that looks confirmed and is not, which is worse than no
+binding at all.
+
 ## Step 0 — Find an existing brain before asking anything
 
 Many owners already have their business written down. Asking them to repeat it
@@ -170,7 +183,8 @@ Written by onboarding. Every skill resolves {{ACCOUNT:...}} from here.
   verified_as: "outreach@yourcompany.com"
   method: composio
   dedicated_sending_identity: true
-  confirmed_by_owner: 2026-08-20
+  owner_said: "yes, that's the right one"   # their literal words
+  confirmed_at: 2026-08-20
 
 - toolkit: apollo
   word_id: apollo_example-handle
@@ -184,6 +198,18 @@ Written by onboarding. Every skill resolves {{ACCOUNT:...}} from here.
 
 Record a toolkit the owner deliberately skipped as an explicit empty binding, so
 a later run can tell "chosen: none" apart from "never asked."
+
+
+### The confirmation cannot be fabricated
+
+`owner_said` holds the owner's **actual words**, quoted. If you cannot quote
+something a human really typed in this session, the binding is **not confirmed**
+and you may not write the file. Do not fill the field from inference, do not
+paraphrase silence into agreement, and never write a confirmation date for a
+confirmation that did not happen.
+
+Every downstream skill trusts this field. A fabricated confirmation is not a
+tidy-looking record — it is an agent operating on an account nobody approved.
 
 `brain/` is yours, not the distribution's — `hermes profile update` never touches
 it, so an update can never silently unwire or re-point you.

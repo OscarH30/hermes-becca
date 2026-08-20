@@ -3,7 +3,7 @@
     {
       "id": "57dc3ed2fdb4",
       "name": "Daily prospecting",
-      "prompt": "Run the daily prospecting pass. Read brain/icp.md and brain/config.md, then use the prospecting skill to find new prospects in Apollo up to daily_prospect_target. Enrich them, qualify them, dedupe against everyone already in the database and on the suppression list, and write every qualified prospect through crm-sync with a non-empty signal field.\n\nReport counts only: prospected / verified / qualified / dropped, the most common signal, and how many are ready for outreach. If the qualified count came in far below target, say so and name the one ICP dimension you would loosen.\n\nIf brain/icp.md does not exist, do not improvise: report that onboarding has not been run and stop.",
+      "prompt": "Run the daily prospecting pass. Read brain/icp.md and brain/config.md, then use the prospecting skill to find new prospects in Apollo up to daily_prospect_target. Enrich them, qualify them, dedupe against everyone already in the database and on the suppression list, and write every qualified prospect through crm-sync with a non-empty signal field.\n\nReport counts only: prospected / verified / qualified / dropped, the most common signal, and how many are ready for outreach. If the qualified count came in far below target, say so and name the one ICP dimension you would loosen.\n\nIf brain/icp.md does not exist, do not improvise: report that onboarding has not been run and stop. Do NOT onboard or choose an account \u2014 this is a scheduled run with no human to confirm anything.",
       "schedule": {
         "kind": "cron",
         "expr": "0 8 * * 1-5",
@@ -31,7 +31,7 @@
     {
       "id": "d56fb0afea8e",
       "name": "Daily outreach batch",
-      "prompt": "Build today's outreach batch using the outreach-campaign skill.\n\nDue follow-ups first, then new first touches, up to daily_send_cap in brain/config.md. Run every prospect through the pre-send checks in crm-sync. Write each email with the cold-email skill using that prospect's specific signal, then run every draft through humanizer.\n\nThen STOP and present the full batch for approval - complete subject and body for every email, not a summary. Do not send anything until the owner approves, unless autonomy is set to auto in brain/config.md.\n\nIf there is nothing to send, say exactly that and stop.",
+      "prompt": "Build today's outreach batch using the outreach-campaign skill.\n\nDue follow-ups first, then new first touches, up to daily_send_cap in brain/config.md. Run every prospect through the pre-send checks in crm-sync. Write each email with the cold-email skill using that prospect's specific signal, then run every draft through humanizer.\n\nThen STOP and present the full batch for approval - complete subject and body for every email, not a summary. Do not send anything until the owner approves, unless autonomy is set to auto in brain/config.md.\n\nIf there is nothing to send, say exactly that and stop.\n\nIf brain/accounts.md is missing or has no owner_said confirmation, report that onboarding has not been run and stop. Do NOT onboard, do NOT choose an account, and do NOT write any binding \u2014 this is a scheduled run with no human to confirm anything.",
       "schedule": {
         "kind": "cron",
         "expr": "0 9 * * 1-5",
@@ -61,7 +61,7 @@
     {
       "id": "5ead0b3ff6b6",
       "name": "Inbox sweep",
-      "prompt": "Check the outreach inbox with the inbox-triage skill.\n\nHandle opt-outs first, before anything else - suppression list, status unsubscribed, cancel queued sends. Then stop the sequence for anyone who replied. Then classify the remaining messages and draft responses for the interested ones and the objections, running each draft through humanizer.\n\nReport only what changed: reply count and classifications, drafts waiting on approval, sequences stopped. If there are no new replies, say 'No new replies' and stop - do not manufacture activity.",
+      "prompt": "Check the outreach inbox with the inbox-triage skill.\n\nHandle opt-outs first, before anything else - suppression list, status unsubscribed, cancel queued sends. Then stop the sequence for anyone who replied. Then classify the remaining messages and draft responses for the interested ones and the objections, running each draft through humanizer.\n\nReport only what changed: reply count and classifications, drafts waiting on approval, sequences stopped. If there are no new replies, say 'No new replies' and stop - do not manufacture activity.\n\nIf brain/accounts.md is missing or has no owner_said confirmation, report that onboarding has not been run and stop. Do NOT onboard, do NOT choose an account, and do NOT write any binding \u2014 this is a scheduled run with no human to confirm anything.",
       "schedule": {
         "kind": "interval",
         "minutes": 120,
