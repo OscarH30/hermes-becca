@@ -28,8 +28,11 @@ owner already configured in Calendly or Cal.com. Do not over-engineer past this.
 Better for senior prospects, who often will not click a scheduling link.
 
 ```bash
-composio execute "GOOGLECALENDAR_FIND_FREE_SLOTS" -d '{...}'
+composio execute "GOOGLECALENDAR_FIND_FREE_SLOTS" --account <word_id> -d '{...}'
 ```
+
+Use `accounts.googlecalendar` from `brain/config.md`; never the default — with
+several calendars connected you would propose someone else's free time.
 
 Then offer **two** specific times, in **their** timezone, inferred from the
 company location. Two, not five — a menu is work.

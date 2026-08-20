@@ -14,6 +14,8 @@ metadata:
 
 One interface, four backends. Read `crm:` in `brain/config.md` to know which.
 
+Pass `--account` from `accounts.crm` in `brain/config.md` on every CRM call.
+
 ## The rule that matters most
 
 **The local database is always written, even when a CRM is connected.**
@@ -33,12 +35,12 @@ report the backlog at the end of the run. Never drop the record.
 present. A complete backend, not a placeholder: it holds prospects, sends,
 replies, and status history.
 
-**`hubspot`** — `composio execute "HUBSPOT_CREATE_CONTACT"` etc., or the REST API
+**`hubspot`** — `composio execute "HUBSPOT_CREATE_CONTACT" --account <word_id>` etc., or the REST API
 with `HUBSPOT_ACCESS_TOKEN`. Map: prospect → Contact, company → Company, each
 send → an Email engagement on the contact timeline. Set `lifecyclestage` to
 `lead` on create.
 
-**`gohighlevel`** — `composio execute "GOHIGHLEVEL_CREATE_CONTACT"`, or the REST
+**`gohighlevel`** — `composio execute "GOHIGHLEVEL_CREATE_CONTACT" --account <word_id>`, or the REST
 API with `GHL_API_KEY` + `GHL_LOCATION_ID`. Map: prospect → Contact with tags,
 status → pipeline stage, each send → a note. GHL requires the location ID on
 every call; if it is missing, stop and ask rather than writing into the wrong

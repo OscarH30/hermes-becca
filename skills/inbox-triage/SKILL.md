@@ -15,6 +15,10 @@ metadata:
 A reply is the whole point. Handle it faster and better than the sequence that
 earned it.
 
+Read `accounts.gmail` from `brain/config.md` and pass `--account <word_id>` on
+every call. Empty → stop and run `onboarding`. Reading the wrong inbox wastes a
+run; replying from it is worse.
+
 ## Order of operations — do not reorder
 
 **1. Opt-outs first, before anything else.**

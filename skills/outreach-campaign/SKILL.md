@@ -72,7 +72,15 @@ segment.
 
 ## Step 4 — Send
 
-Send through the configured provider — Gmail/Outlook via Composio, or AgentMail.
+**Confirm the outbound identity first.** Read `accounts.gmail` and
+`sending_address` from `brain/config.md`. If either is empty, stop — do not send
+from a default account. Owners often have several mailboxes connected, and cold
+email from the wrong one reaches real people from an address that never agreed
+to send it. Verify the address the provider will actually send as, and that it
+matches `sending_address`. A mismatch stops the run.
+
+Send through the configured provider — Gmail/Outlook via Composio (always with
+`--account <word_id>`), or AgentMail.
 
 - Space sends across the `send_window`. Do not fire 20 emails in 40 seconds;
   it is the most obvious automation signal there is.

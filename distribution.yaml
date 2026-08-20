@@ -1,5 +1,5 @@
 name: becca
-version: 1.0.0
+version: 1.0.1
 description: "Cold outreach SDR — finds prospects in Apollo, writes human-sounding cold email, keeps your CRM current, works the inbox, and books calls. Approve-first by default."
 hermes_requires: ">=0.20.0"
 author: "Vindex Consulting"

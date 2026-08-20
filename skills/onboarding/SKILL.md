@@ -92,6 +92,32 @@ required, and both connection paths. Never make the owner guess.
 | Store prospects | `composio link hubspot` / `gohighlevel` | local database (built in) | No |
 | Book calls | a booking link in `BECCA_BOOKING_LINK` | `composio link googlecalendar` | No |
 
+### Pin every account before you use it
+
+Owners routinely have **several** accounts connected to the same Composio login
+— a personal inbox, a client's inbox, an old company. When more than one exists,
+an unpinned call picks one for you, and which one it picks is not something you
+may rely on.
+
+For each toolkit you connect, list what is there:
+
+```bash
+composio connections list --toolkit gmail
+composio connections list --toolkit apollo
+composio connections list --toolkit googlecalendar
+```
+
+If more than one comes back, **show the owner the list and make them choose.**
+Never pick the first, and never assume the alias that looks right is right.
+
+Record each chosen `word_id` in `brain/config.md`. **Every** later call passes
+`--account <word_id>`. A call without it is a bug, not a shortcut.
+
+This matters most for the sending inbox. Cold email leaving the wrong mailbox is
+not a formatting mistake — it reaches real people from an address that never
+agreed to send it, and you cannot take it back. Read the chosen address back to
+the owner and get an explicit yes before a single draft is written.
+
 **On the CRM:** if the owner uses a CRM that is not HubSpot or GoHighLevel, do
 not tell them they are out of luck. Run `composio search "<their CRM> create
 contact"`. Composio covers most of them. If theirs is genuinely unsupported,
@@ -141,6 +167,12 @@ sequence_steps: 3
 sequence_spacing_days: [0, 3, 5]
 crm: local              # local | hubspot | gohighlevel | <composio toolkit>
 email_provider: gmail   # gmail | outlook | agentmail
+accounts:               # REQUIRED: pinned word_ids, never rely on defaults
+  gmail: ""             # the sending inbox — read back to the owner first
+  apollo: ""
+  googlecalendar: ""
+  crm: ""
+sending_address: ""     # verified from the mailbox itself, not the alias
 booking_link: ""
 send_window: "09:00-16:00"
 timezone: "America/Chicago"

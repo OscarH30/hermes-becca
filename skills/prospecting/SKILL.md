@@ -20,6 +20,10 @@ nobody on it twice.
 Read `brain/icp.md` and `brain/config.md`. If either is missing, stop and run
 `onboarding`. Searching without an ICP produces a list that wastes sends.
 
+Pass `--account` from `accounts.apollo` on every Apollo call. If it is empty,
+stop and run `onboarding` — an unpinned call can spend a different account's
+credits, and with two Apollo connections you will not notice which.
+
 ## Step 1 — Search organizations, then people
 
 Two passes beat one. Find the right **companies** first, then the right
@@ -28,8 +32,8 @@ and it costs fewer credits.
 
 **Composio path (recommended):**
 ```bash
-composio execute "APOLLO_ORGANIZATION_SEARCH" -d '{...}'
-composio execute "APOLLO_PEOPLE_SEARCH" -d '{...}'
+composio execute "APOLLO_ORGANIZATION_SEARCH" --account <word_id> -d '{...}'
+composio execute "APOLLO_PEOPLE_SEARCH"       --account <word_id> -d '{...}'
 ```
 
 **Direct API path:** `POST https://api.apollo.io/api/v1/mixed_companies/search`
@@ -56,7 +60,7 @@ asks for triggers.
 Search results usually lack a usable email. Enrich the shortlist:
 
 ```bash
-composio execute "APOLLO_BULK_PEOPLE_ENRICHMENT" -d '{...}'
+composio execute "APOLLO_BULK_PEOPLE_ENRICHMENT" --account <word_id> -d '{...}'
 ```
 
 Batches of **10 or fewer**. Dedupe inputs first. Merge results back by Apollo
