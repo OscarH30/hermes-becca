@@ -15,6 +15,17 @@ metadata:
 This skill is the orchestration. `cold-email` writes the words; this decides who
 gets them, when, and whether they go out at all.
 
+## Resolve your accounts first
+
+Every `{{ACCOUNT:<toolkit>}}` below is a placeholder. Read `brain/accounts.md`
+and substitute the `word_id` recorded there.
+
+If `brain/accounts.md` is missing, or the toolkit you need has no entry, **stop
+and run `onboarding`.** Never substitute a default and never guess. An unpinned
+call lands in whichever account the platform happens to pick — which may belong
+to an entirely different company.
+
+
 ## Step 1 — Assemble the batch
 
 Read `brain/config.md` for `daily_send_cap`, `sequence_steps`,
@@ -72,15 +83,14 @@ segment.
 
 ## Step 4 — Send
 
-**Confirm the outbound identity first.** Read `accounts.gmail` and
-`sending_address` from `brain/config.md`. If either is empty, stop — do not send
+**Confirm the outbound identity first.** Read the `gmail` binding and `sending_address` from `brain/accounts.md`. If either is empty, stop — do not send
 from a default account. Owners often have several mailboxes connected, and cold
 email from the wrong one reaches real people from an address that never agreed
 to send it. Verify the address the provider will actually send as, and that it
 matches `sending_address`. A mismatch stops the run.
 
 Send through the configured provider — Gmail/Outlook via Composio (always with
-`--account <word_id>`), or AgentMail.
+`--account {{ACCOUNT:gmail}}`), or AgentMail.
 
 - Space sends across the `send_window`. Do not fire 20 emails in 40 seconds;
   it is the most obvious automation signal there is.

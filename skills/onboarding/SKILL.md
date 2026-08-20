@@ -20,6 +20,17 @@ offer, the ICP, or the tooling changes.
 them. If you finish this skill and `brain/business.md` does not exist, the
 onboarding did not happen.
 
+## Resolve your accounts first
+
+Every `{{ACCOUNT:<toolkit>}}` below is a placeholder. Read `brain/accounts.md`
+and substitute the `word_id` recorded there.
+
+If `brain/accounts.md` is missing, or the toolkit you need has no entry, **stop
+and run `onboarding`.** Never substitute a default and never guess. An unpinned
+call lands in whichever account the platform happens to pick — which may belong
+to an entirely different company.
+
+
 ## Step 0 — Find an existing brain before asking anything
 
 Many owners already have their business written down. Asking them to repeat it
@@ -80,64 +91,106 @@ is the failure mode this step exists to avoid.
   (Default is approve-every-batch. Say so.)
 - Anyone or any company I must never contact?
 
-## Step 2 — Connect the tools
+## Step 2 — Decide, together, what you are allowed to touch
 
-Work through these four in order. For each, state what it is for, whether it is
-required, and both connection paths. Never make the owner guess.
+You arrive with no accounts. This step is where the owner grants you each one,
+deliberately. Until `brain/accounts.md` exists you must not read an inbox, spend
+an Apollo credit, or touch a calendar.
+
+Work through the four needs below. For each: say what it is for, whether it is
+required, and offer both connection paths. Never make the owner guess, and never
+pick an account for them.
 
 | Need | Recommended | Alternative | Required? |
 |---|---|---|---|
 | Find prospects | `composio link apollo` | `APOLLO_API_KEY` in `.env` | Yes |
-| Send & receive email | `composio link gmail` (or `outlook`) | `AGENTMAIL_API_KEY` | Yes |
+| Send & receive email | `composio link gmail` / `outlook` | `AGENTMAIL_API_KEY` | Yes |
 | Store prospects | `composio link hubspot` / `gohighlevel` | local database (built in) | No |
-| Book calls | a booking link in `BECCA_BOOKING_LINK` | `composio link googlecalendar` | No |
+| Book calls | a booking link | `composio link googlecalendar` | No |
 
-### Pin every account before you use it
-
-Owners routinely have **several** accounts connected to the same Composio login
-— a personal inbox, a client's inbox, an old company. When more than one exists,
-an unpinned call picks one for you, and which one it picks is not something you
-may rely on.
-
-For each toolkit you connect, list what is there:
+For every toolkit, list what already exists before assuming anything:
 
 ```bash
 composio connections list --toolkit gmail
-composio connections list --toolkit apollo
-composio connections list --toolkit googlecalendar
 ```
 
-If more than one comes back, **show the owner the list and make them choose.**
-Never pick the first, and never assume the alias that looks right is right.
+Show every result with alias and status. Ask which one — and always offer the
+third option: *"or would you rather connect a different one first?"* If they
+want a new connection, wait while they run `composio link`.
 
-Record each chosen `word_id` in `brain/config.md`. **Every** later call passes
-`--account <word_id>`. A call without it is a bug, not a shortcut.
+### The sending inbox is the decision that matters most
 
-This matters most for the sending inbox. Cold email leaving the wrong mailbox is
-not a formatting mistake — it reaches real people from an address that never
-agreed to send it, and you cannot take it back. Read the chosen address back to
-the owner and get an explicit yes before a single draft is written.
+Do not treat this as "pick a Gmail." Ask it as a real question, because the
+right answer is often **a new account they do not have yet**:
 
-**On the CRM:** if the owner uses a CRM that is not HubSpot or GoHighLevel, do
-not tell them they are out of luck. Run `composio search "<their CRM> create
-contact"`. Composio covers most of them. If theirs is genuinely unsupported,
-say so and use the local database — it is a real fallback, not a consolation
-prize.
+> Do you want me sending from an inbox you already use, or should we set up a
+> dedicated one for outreach?
 
-**On email, be honest about deliverability.** Say this out loud, in plain
-language, before they connect anything:
+Then give them the honest tradeoff before they answer:
 
-> Sending cold email from your main company domain can hurt the deliverability
-> of your normal mail. The standard practice is a separate domain that
-> redirects to your real site, a dedicated mailbox on it, SPF/DKIM/DMARC set
-> up, and two to three weeks of warmup before real volume. If you skip the
-> warmup and send fifty on day one, they land in spam and the domain is burned.
+> Sending cold email from your main company address can damage the
+> deliverability of your normal mail — the mail you actually need to arrive.
+> The standard practice is a separate domain that redirects to your real site,
+> a dedicated mailbox on it, SPF/DKIM/DMARC configured, and two to three weeks
+> of warmup before real volume. If you'd rather start today on an existing
+> mailbox, that's your call — I'll cap the first week at 10–15 a day and we
+> ramp from there.
 
-Then ask which they want. If they want to start today on an existing mailbox,
-that is their call — cap the first week at 10-15/day and tell them why.
+If they choose a dedicated identity, **stop onboarding at this point.** Buying a
+domain and warming a mailbox takes days, not minutes. Write down what you have
+so far, tell them exactly what to set up, and pick this back up when it exists.
+Stopping is the right outcome — the alternative is an agent wired to the wrong
+address that starts sending before anyone notices.
 
-**Completion criterion:** for each of the four rows, you can state either
-"connected via X" or "deliberately skipped, because Y."
+Once an inbox is chosen, verify the address the provider will actually send as,
+and read it back:
+
+> I'll be sending as **outreach@yourcompany.com**. Confirm?
+
+An alias in a connection list is not proof of the address. Check the mailbox.
+
+### On the CRM
+
+If they use a CRM that is not HubSpot or GoHighLevel, do not tell them they are
+out of luck. Run `composio search "<their CRM> create contact"` — Composio covers
+Close, Pipedrive, Salesforce, Zoho, Attio, Copper and more. If theirs genuinely
+is not supported, say so and use the local database, which is a real backend and
+not a consolation prize.
+
+### Write the binding
+
+Create `brain/accounts.md`. This is what turns you from inert into operational:
+
+```markdown
+# Account bindings
+Written by onboarding. Every skill resolves {{ACCOUNT:...}} from here.
+
+- toolkit: gmail
+  word_id: gmail_example-handle
+  verified_as: "outreach@yourcompany.com"
+  method: composio
+  dedicated_sending_identity: true
+  confirmed_by_owner: 2026-08-20
+
+- toolkit: apollo
+  word_id: apollo_example-handle
+  verified_as: "Your Company workspace"
+  method: composio
+
+- toolkit: crm
+  word_id: ""            # empty = local database
+  verified_as: "local"
+```
+
+Record a toolkit the owner deliberately skipped as an explicit empty binding, so
+a later run can tell "chosen: none" apart from "never asked."
+
+`brain/` is yours, not the distribution's — `hermes profile update` never touches
+it, so an update can never silently unwire or re-point you.
+
+**Completion criterion:** `brain/accounts.md` exists; every required toolkit has
+a binding the owner chose out loud; and the sending address has been verified
+from the mailbox rather than inferred from an alias.
 
 ## Step 3 — Write the brain
 
@@ -167,12 +220,6 @@ sequence_steps: 3
 sequence_spacing_days: [0, 3, 5]
 crm: local              # local | hubspot | gohighlevel | <composio toolkit>
 email_provider: gmail   # gmail | outlook | agentmail
-accounts:               # REQUIRED: pinned word_ids, never rely on defaults
-  gmail: ""             # the sending inbox — read back to the owner first
-  apollo: ""
-  googlecalendar: ""
-  crm: ""
-sending_address: ""     # verified from the mailbox itself, not the alias
 booking_link: ""
 send_window: "09:00-16:00"
 timezone: "America/Chicago"

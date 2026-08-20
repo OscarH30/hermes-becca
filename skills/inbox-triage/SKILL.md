@@ -15,9 +15,20 @@ metadata:
 A reply is the whole point. Handle it faster and better than the sequence that
 earned it.
 
-Read `accounts.gmail` from `brain/config.md` and pass `--account <word_id>` on
+Read the `gmail` binding from `brain/accounts.md` and pass `--account {{ACCOUNT:gmail}}` on
 every call. Empty → stop and run `onboarding`. Reading the wrong inbox wastes a
 run; replying from it is worse.
+
+## Resolve your accounts first
+
+Every `{{ACCOUNT:<toolkit>}}` below is a placeholder. Read `brain/accounts.md`
+and substitute the `word_id` recorded there.
+
+If `brain/accounts.md` is missing, or the toolkit you need has no entry, **stop
+and run `onboarding`.** Never substitute a default and never guess. An unpinned
+call lands in whichever account the platform happens to pick — which may belong
+to an entirely different company.
+
 
 ## Order of operations — do not reorder
 

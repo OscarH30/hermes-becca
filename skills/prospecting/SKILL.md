@@ -15,12 +15,23 @@ metadata:
 Turn `brain/icp.md` into a list of real people with real email addresses, with
 nobody on it twice.
 
+## Resolve your accounts first
+
+Every `{{ACCOUNT:<toolkit>}}` below is a placeholder. Read `brain/accounts.md`
+and substitute the `word_id` recorded there.
+
+If `brain/accounts.md` is missing, or the toolkit you need has no entry, **stop
+and run `onboarding`.** Never substitute a default and never guess. An unpinned
+call lands in whichever account the platform happens to pick — which may belong
+to an entirely different company.
+
+
 ## Before you search
 
 Read `brain/icp.md` and `brain/config.md`. If either is missing, stop and run
 `onboarding`. Searching without an ICP produces a list that wastes sends.
 
-Pass `--account` from `accounts.apollo` on every Apollo call. If it is empty,
+Pass `--account` from the `apollo` binding in `brain/accounts.md` on every Apollo call. If it is empty,
 stop and run `onboarding` — an unpinned call can spend a different account's
 credits, and with two Apollo connections you will not notice which.
 
@@ -32,8 +43,8 @@ and it costs fewer credits.
 
 **Composio path (recommended):**
 ```bash
-composio execute "APOLLO_ORGANIZATION_SEARCH" --account <word_id> -d '{...}'
-composio execute "APOLLO_PEOPLE_SEARCH"       --account <word_id> -d '{...}'
+composio execute "APOLLO_ORGANIZATION_SEARCH" --account {{ACCOUNT:apollo}} -d '{...}'
+composio execute "APOLLO_PEOPLE_SEARCH"       --account {{ACCOUNT:apollo}} -d '{...}'
 ```
 
 **Direct API path:** `POST https://api.apollo.io/api/v1/mixed_companies/search`
@@ -60,7 +71,7 @@ asks for triggers.
 Search results usually lack a usable email. Enrich the shortlist:
 
 ```bash
-composio execute "APOLLO_BULK_PEOPLE_ENRICHMENT" --account <word_id> -d '{...}'
+composio execute "APOLLO_BULK_PEOPLE_ENRICHMENT" --account {{ACCOUNT:apollo}} -d '{...}'
 ```
 
 Batches of **10 or fewer**. Dedupe inputs first. Merge results back by Apollo

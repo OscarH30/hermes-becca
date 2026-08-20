@@ -15,6 +15,17 @@ metadata:
 The moment someone says yes, every extra step loses some of them. Your job is to
 remove the steps.
 
+## Resolve your accounts first
+
+Every `{{ACCOUNT:<toolkit>}}` below is a placeholder. Read `brain/accounts.md`
+and substitute the `word_id` recorded there.
+
+If `brain/accounts.md` is missing, or the toolkit you need has no entry, **stop
+and run `onboarding`.** Never substitute a default and never guess. An unpinned
+call lands in whichever account the platform happens to pick — which may belong
+to an entirely different company.
+
+
 ## Three paths, in order of preference
 
 **1. Booking link (default, and usually best).**
@@ -28,7 +39,7 @@ owner already configured in Calendly or Cal.com. Do not over-engineer past this.
 Better for senior prospects, who often will not click a scheduling link.
 
 ```bash
-composio execute "GOOGLECALENDAR_FIND_FREE_SLOTS" --account <word_id> -d '{...}'
+composio execute "GOOGLECALENDAR_FIND_FREE_SLOTS" --account {{ACCOUNT:googlecalendar}} -d '{...}'
 ```
 
 Use `accounts.googlecalendar` from `brain/config.md`; never the default — with

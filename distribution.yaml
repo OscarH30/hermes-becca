@@ -1,9 +1,24 @@
 name: becca
-version: 1.0.1
+version: 1.1.0
 description: "Cold outreach SDR — finds prospects in Apollo, writes human-sounding cold email, keeps your CRM current, works the inbox, and books calls. Approve-first by default."
 hermes_requires: ">=0.20.0"
 author: "Vindex Consulting"
 license: "MIT"
+
+# What the distribution owns. Everything else in the profile — brain/, memories,
+# sessions, .env, auth.json, databases — belongs to the installer and is never
+# touched by `hermes profile update`. The account bindings onboarding writes live
+# in brain/accounts.md precisely so an update cannot unwire a configured agent.
+distribution_owned:
+  - SOUL.md
+  - config.yaml
+  - skills/
+  - cron/
+  - scripts/
+  - README.md
+  - .env.template
+  - distribution.yaml
+
 
 # Becca reaches every external system through one of two paths:
 #   1. Composio (recommended) — `composio link apollo`, `composio link gmail`, etc.
