@@ -1,0 +1,44 @@
+name: becca
+version: 1.0.0
+description: "Cold outreach SDR — finds prospects in Apollo, writes human-sounding cold email, keeps your CRM current, works the inbox, and books calls. Approve-first by default."
+hermes_requires: ">=0.20.0"
+author: "Vindex Consulting"
+license: "MIT"
+
+# Becca reaches every external system through one of two paths:
+#   1. Composio (recommended) — `composio link apollo`, `composio link gmail`, etc.
+#      Managed OAuth, no keys pasted anywhere. Nothing below is required.
+#   2. Direct API keys — for anyone who does not want a Composio account.
+#
+# Everything here is optional on purpose. Becca's onboarding skill detects what
+# you actually connected and configures herself around it. She will not nag you
+# for a key you are not using.
+env_requires:
+  - name: COMPOSIO_API_KEY
+    description: "Composio API key — the recommended path for Apollo, Gmail, HubSpot, and calendar. Get one free at composio.dev, then run `composio link apollo`."
+    required: false
+    default: ""
+  - name: APOLLO_API_KEY
+    description: "Apollo.io API key — only if you are NOT using Composio for Apollo. Requires an Apollo plan that includes API access."
+    required: false
+    default: ""
+  - name: AGENTMAIL_API_KEY
+    description: "AgentMail API key — fastest way to give Becca her own sending inbox. Alternative to connecting Gmail/Outlook via Composio."
+    required: false
+    default: ""
+  - name: HUBSPOT_ACCESS_TOKEN
+    description: "HubSpot private-app token — only if you are NOT using Composio for HubSpot."
+    required: false
+    default: ""
+  - name: GHL_API_KEY
+    description: "GoHighLevel API key — only if you are NOT using Composio for GoHighLevel."
+    required: false
+    default: ""
+  - name: GHL_LOCATION_ID
+    description: "GoHighLevel location (sub-account) ID that Becca should write leads into."
+    required: false
+    default: ""
+  - name: BECCA_BOOKING_LINK
+    description: "Your scheduling link (Calendly, Cal.com, HubSpot Meetings). Becca drops this into emails so no calendar API is required."
+    required: false
+    default: ""
