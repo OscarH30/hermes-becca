@@ -1,5 +1,5 @@
 name: becca
-version: 1.2.0
+version: 1.2.1
 description: "Cold outreach SDR — finds prospects in Apollo, writes human-sounding cold email, keeps your CRM current, works the inbox, and books calls. Approve-first by default."
 hermes_requires: ">=0.20.0"
 author: "Vindex Consulting"
@@ -7,8 +7,12 @@ license: "MIT"
 
 # What the distribution owns. Everything else in the profile — brain/, memories,
 # sessions, .env, auth.json, databases — belongs to the installer and is never
-# touched by `hermes profile update`. The account bindings onboarding writes live
-# in brain/accounts.md precisely so an update cannot unwire a configured agent.
+# touched by `hermes profile update`.
+#
+# Note what is deliberately ABSENT from this list: mcp.json and the mcp_servers
+# block in config.yaml. Those hold the tools onboarding wired to this profile,
+# and an update must never be able to unwire a configured agent. Skills, SOUL,
+# and cron improve; access stays exactly as the owner granted it.
 distribution_owned:
   - SOUL.md
   - config.yaml
@@ -20,17 +24,15 @@ distribution_owned:
   - distribution.yaml
 
 
-# Becca reaches every external system through one of two paths:
-#   1. Composio (recommended) — `composio link apollo`, `composio link gmail`, etc.
-#      Managed OAuth, no keys pasted anywhere. Nothing below is required.
-#   2. Direct API keys — for anyone who does not want a Composio account.
+# NOTHING HERE IS REQUIRED TO INSTALL OR START.
 #
-# Everything here is optional on purpose. Becca's onboarding skill detects what
-# you actually connected and configures herself around it. She will not nag you
-# for a key you are not using.
+# Becca arrives with no tool access at all. Her onboarding skill connects what
+# she needs and wires it to this profile — Composio (recommended), your own API
+# keys, or an MCP server you already run. These variables only apply if you pick
+# the direct-key route, and onboarding will tell you which ones it needs.
 env_requires:
   - name: COMPOSIO_API_KEY
-    description: "Composio API key — the recommended path for Apollo, Gmail, HubSpot, and calendar. Get one free at composio.dev, then run `composio link apollo`."
+    description: "Composio API key — the recommended path for Apollo, Gmail, HubSpot, and calendar. Get one free at composio.dev. Onboarding walks you through it."
     required: false
     default: ""
   - name: APOLLO_API_KEY
