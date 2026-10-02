@@ -1,5 +1,5 @@
 name: becca
-version: 1.2.1
+version: 1.3.0
 description: "Cold outreach SDR — finds prospects in Apollo, writes human-sounding cold email, keeps your CRM current, works the inbox, and books calls. Approve-first by default."
 hermes_requires: ">=0.20.0"
 author: "Vindex Consulting"
@@ -39,8 +39,12 @@ env_requires:
     description: "Apollo.io API key — only if you are NOT using Composio for Apollo. Requires an Apollo plan that includes API access."
     required: false
     default: ""
+  - name: INSTANTLY_API_KEY
+    description: "Instantly API key — the recommended sending path. Becca loads approved emails into your campaign and Instantly sends them in your name from your warmed lookalike domains. Only needed if you are NOT connecting Instantly through Composio."
+    required: false
+    default: ""
   - name: AGENTMAIL_API_KEY
-    description: "AgentMail API key — fastest way to give Becca her own sending inbox. Alternative to connecting Gmail/Outlook via Composio."
+    description: "AgentMail API key — an alternative sending inbox, if you are not using Instantly or Gmail/Outlook."
     required: false
     default: ""
   - name: HUBSPOT_ACCESS_TOKEN

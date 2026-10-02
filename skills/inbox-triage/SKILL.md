@@ -29,6 +29,18 @@ be recalled.
 Tool names below are the common Composio slugs. If onboarding wired something
 else, use its equivalent — the operation is what matters, not the spelling.
 
+## Where the replies are
+
+With Instantly, every reply across every sending account lands in Instantly's
+unified inbox. Read it there (`INSTANTLY_LIST_EMAILS`), and answer **in the same
+thread, from the same account that sent the original**, so the prospect keeps
+talking to the same address. Mark the lead's status in Instantly as well as in
+`crm-sync`, so the campaign never sends them another step.
+
+Every reply you draft is written and signed as the owner, exactly like the cold
+email. The prospect thinks they are talking to the CEO because they are: the
+owner approves what goes out under their name.
+
 ## Order of operations — do not reorder
 
 **1. Opt-outs first, before anything else.**
@@ -58,6 +70,7 @@ operation look automated, because it is.
 | **Referral** | "Talk to Dana instead" | Thank them, write the new contact in, open a fresh thread naming the referrer. |
 | **Not now** | "Revisit in Q1" | Status `not_interested`, note the date, propose a reminder. Do not argue. |
 | **Hard no** | Clear rejection | Status `not_interested`. One-line thanks or nothing. Never rebut. |
+| **Asks if it's automated** | "Is this a bot?" "Did a person write this?" | Draft nothing. Flag it for the owner to answer personally. |
 | **Auto-reply** | Out of office, no human content | Not a reply. Reschedule the step past their return date. Do not set `replied`. |
 | **Bounce** | Delivery failure | Status `bounced`. Never retry. If bounces exceed 3% of a batch, stop and warn the owner — the list or the domain has a problem. |
 

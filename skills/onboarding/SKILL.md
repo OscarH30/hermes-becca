@@ -82,6 +82,9 @@ is the failure mode this step exists to avoid.
 - What do prospects push back on, and what's the honest answer?
 
 **The voice**
+- Whose name goes on the email? (Default: yours, the owner or CEO. Cold email
+  from the person who runs the company gets answered. Get their name, title,
+  and the exact signature block they use.)
 - Formal or casual with your customers?
 - Anything you would never say? Words you hate?
 - Do you have past emails that worked? (Ask for two or three. They are worth
@@ -110,7 +113,7 @@ Say where you stand first, so the empty state does not read as broken:
 | Need | What it is for | Required? |
 |---|---|---|
 | Prospect data | Finding the right people | **Yes** |
-| Email | Sending and receiving | **Yes** |
+| Email | Sending and receiving, in the owner's name | **Yes**: Instantly recommended |
 | CRM | Storing prospects | No — a local database ships with you |
 | Calendar | Booking calls | No — a booking link works instead |
 
@@ -118,14 +121,15 @@ Say where you stand first, so the empty state does not read as broken:
 
 Three real paths. Lay them out; do not assume the one you find easiest.
 
-**Composio (recommended).** Handles OAuth for Apollo, Gmail/Outlook, HubSpot,
-GoHighLevel, calendars. Nothing pasted, revocable from one dashboard.
-- Already using it? `composio link apollo`, `composio link gmail`, and so on.
+**Composio (recommended).** Handles OAuth for Apollo, Instantly, Gmail/Outlook,
+HubSpot, GoHighLevel, calendars. Nothing pasted, revocable from one dashboard.
+- Already using it? `composio link apollo`, `composio link instantly`, and so on.
 - New to it? Walk them through signup at composio.dev. Many owners installing
   you will never have heard of it — do not assume an account exists.
 
 **Direct API connections.** An Apollo API key (needs a plan with API access),
-AgentMail for a purpose-built agent inbox, a HubSpot private-app token. Keys go
+an Instantly API key (`INSTANTLY_API_KEY`), AgentMail, a HubSpot private-app
+token. Keys go
 in this profile's `.env`. More setup, no third party in the path.
 
 **MCP servers they already run.** If they have tooling wired for another agent,
@@ -153,35 +157,52 @@ hermes -p becca mcp list
 Nothing there? **Stop.** Do not work around it and do not offer to have them
 paste a prospect list at you instead.
 
-### 2d. The sending inbox is the decision that matters most
+### 2d. The sender and the sending inboxes are the decision that matters most
 
-Do not treat this as "pick a Gmail." The right answer is often **an account they
-do not have yet**, so ask it as a real question:
+Two separate questions. Ask both.
 
-> Do you want me sending from an inbox you already use, or should we set up a
-> dedicated one for outreach?
+**Who is it from?** The owner, by default. The email goes out under their real
+name and title and signs with their real signature, because a note from the CEO
+gets answered and a note from an unknown rep does not. Becca never appears on
+the email. Confirm the exact name, title, and signature block now.
 
-Give them the tradeoff before they answer:
+**Where does it send from?** Not the owner's main domain. Give them the
+recommended setup before they answer:
 
-> Sending cold email from your main company address can damage the deliverability
-> of your normal mail — the mail you actually need to arrive. The standard
-> practice is a separate domain that redirects to your real site, a dedicated
-> mailbox on it, SPF/DKIM/DMARC configured, and two to three weeks of warmup
-> before real volume. If you'd rather start today on an existing mailbox, that's
-> your call — I'll cap the first week at 10–15 a day and we ramp from there.
+> I'll write every email as you, but I shouldn't send them from your main
+> address. Cold email from your real domain can damage the deliverability of the
+> mail you actually need to arrive. The standard setup:
+> - Two or three lookalike domains that redirect to your site
+>   (getyourcompany.com, tryyourcompany.com)
+> - Two or three inboxes on each, in your name (yourname@getyourcompany.com)
+> - SPF, DKIM, and DMARC on every domain
+> - All of them connected to **Instantly**, warmed for two to three weeks,
+>   then ramped from 10 to 15 a day
+>
+> Instantly rotates the sends across those inboxes, runs the follow-ups, and
+> stops the sequence when someone replies. Every reply lands in one inbox I can
+> work, and every one still says it came from you.
 
-If they choose a dedicated identity, **stop onboarding here.** Buying a domain
-and warming a mailbox takes days, not minutes. Write down what you have, tell
-them exactly what to set up, and pick this back up when it exists. Stopping is
-the right outcome — the alternative is an agent wired to the wrong address that
-starts sending before anyone notices.
+If those domains and inboxes do not exist yet, or are not warmed, **stop
+onboarding here.** Write down what you have and exactly what to set up, and pick
+this back up when Instantly shows them warmed. Stopping is the right outcome:
+the alternative is an agent sending in the owner's name from a cold domain that
+lands in spam on day one.
 
-Once an inbox is connected, verify the address you would actually send as and
-read it back:
+If the owner deliberately chooses their existing mailbox instead (Gmail,
+Outlook, AgentMail), that is their call. Write it down with their words, and cap
+the first week at 10 to 15 a day.
 
-> I'll be sending as **outreach@yourcompany.com**. Confirm?
+Once connected, verify and read back the whole identity, from the accounts
+themselves, not from an alias:
 
-A connection alias is not proof of the address. Check the mailbox.
+> I'll be writing as **Oscar Hidalgo, CEO**, signed exactly like this: [block].
+> Sending through Instantly from **oscar@getcgservicepros.com** and
+> **oscar@trycgservicepros.com**, both warmed, both showing "Oscar Hidalgo" as
+> the sender name. Confirm?
+
+A connection alias is not proof of the address. Check each sending account's
+email and display name in Instantly.
 
 ### 2e. On the CRM
 
@@ -197,10 +218,11 @@ Record it in `brain/access.md`:
 # Access granted at onboarding
 
 - system: email
-  connected_via: composio MCP on this profile
-  verified_as: "outreach@yourcompany.com"
-  dedicated_sending_identity: true
-  owner_said: "yes, use the new one"   # their literal words
+  connected_via: composio MCP on this profile (instantly)
+  sender: "Oscar Hidalgo, CEO"
+  verified_as: ["oscar@getyourcompany.com", "oscar@tryyourcompany.com"]
+  dedicated_sending_domains: true
+  owner_said: "yes, send as me from the new domains"   # their literal words
   confirmed_at: 2026-08-20
 
 - system: prospecting
@@ -239,8 +261,9 @@ trigger events. Write the trigger events as things you could actually search for
 in Apollo (hiring for a role, recent funding, headcount growth, a tech change).
 End with an explicit exclusion list.
 
-**`brain/voice.md`** — tone, words to use, words to never use, sign-off, and any
-example emails they gave you, quoted verbatim. Verbatim examples matter more
+**`brain/voice.md`** — tone, words to use, words to never use, and any example
+emails they gave you, quoted verbatim. Written in the owner's first person,
+because that is whose voice every email is in. Verbatim examples matter more
 than your description of them.
 
 **`brain/config.md`** — the operating rules, as a machine-readable block:
@@ -252,7 +275,19 @@ daily_prospect_target: 25
 sequence_steps: 3
 sequence_spacing_days: [0, 3, 5]
 crm: local              # local | hubspot | gohighlevel | <composio toolkit>
-email_provider: gmail   # gmail | outlook | agentmail
+email_provider: instantly   # instantly | gmail | outlook | agentmail
+sender:                 # every email is written and signed as this person
+  name: "Oscar Hidalgo"
+  title: "CEO"
+  company: "Your Company"
+  signature: |
+    Oscar Hidalgo
+    CEO, Your Company
+    (512) 555-0100
+sending_accounts:       # instantly: the warmed inboxes on lookalike domains
+  - oscar@getyourcompany.com
+  - oscar@tryyourcompany.com
+instantly_campaign: ""  # the campaign Becca loads approved leads into
 booking_link: ""
 send_window: "09:00-16:00"
 timezone: "America/Chicago"
@@ -275,8 +310,9 @@ what makes "never email the same person twice" true.
 Do not end onboarding with a summary. End it with evidence:
 
 1. Pull **three** real prospects from Apollo against the ICP you just wrote.
-2. Write **one** complete cold email to the best of them, run it through the
-   `humanizer` skill, and show it.
+2. Write **one** complete cold email to the best of them, in the owner's name and
+   signed with their signature, run it through the `humanizer` skill, and show
+   it.
 3. Say what you would do tomorrow morning without being asked, and which cron
    jobs are scheduled to do it.
 4. Ask one question: *"Does that email sound like you?"* Their answer is the

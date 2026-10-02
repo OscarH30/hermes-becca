@@ -51,6 +51,14 @@ For each prospect, use the `cold-email` skill, feeding it: the prospect's role
 and company, the **specific signal** from their record, the offer and proof from
 `brain/business.md`, and the tone rules from `brain/voice.md`.
 
+**Write it as the owner.** First person as `sender.name`, signed with
+`sender.signature` verbatim. Never as Becca, never "on behalf of", never a
+mention of an assistant or AI. See SOUL.md.
+
+**With Instantly, write every step now.** Instantly sends the follow-ups on its
+own schedule, so the owner approves the whole sequence at once: the first touch
+and each follow-up for every prospect, up to `sequence_steps`.
+
 Then run every draft through `humanizer`. No exceptions, including follow-ups.
 
 **Follow-ups are not reminders.** Each step adds something — a different angle, a
@@ -63,6 +71,7 @@ This is the default and the whole batch stops here. Show:
 
 ```
 Batch for Wed 20 Aug — 18 emails (12 first touch, 6 follow-up)
+From: Oscar Hidalgo, CEO · via Instantly (oscar@getyourcompany.com, oscar@tryyourcompany.com)
 Cap: 20 · Window: 09:00-16:00 CT
 
  1. Dana Reyes · VP Ops · Northwind Logistics · hiring 3 dispatchers
@@ -86,8 +95,26 @@ segment.
 
 ## Step 4 — Send
 
-Send through the configured provider — Gmail/Outlook via Composio (always with
-``), or AgentMail.
+Send through the configured provider in `brain/config.md`.
+
+**Instantly (`email_provider: instantly`).** You do not send email one by one.
+You load approved leads into `instantly_campaign` and Instantly sends:
+
+- Before the first load, read the campaign back and check it: the sending
+  accounts are exactly `sending_accounts`, every one shows `sender.name` as the
+  display name, stop-on-reply is on, open and link tracking are off, the daily
+  limit per account is at or under `daily_send_cap`, and the schedule matches
+  `send_window`. Anything different, stop and tell the owner.
+- The campaign's steps are thin templates (`{{subject_1}}` / `{{body_1}}`, and
+  so on). Each lead carries its own approved words as custom variables, so every
+  email is the one the owner read. Add them with `INSTANTLY_ADD_LEADS_BULK`,
+  duplicate-skip on, then check the uploaded count matches. A "success" can
+  still upload zero.
+- Log every lead the moment Instantly accepts it. A lead that isn't logged will
+  be loaded again.
+
+**Gmail / Outlook / AgentMail.** Send each approved email through the connected
+account, from the verified address, with `sender.name` as the display name.
 
 - Space sends across the `send_window`. Do not fire 20 emails in 40 seconds;
   it is the most obvious automation signal there is.
