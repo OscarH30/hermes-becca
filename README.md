@@ -3,6 +3,11 @@
 Becca finds the right people, writes cold email that sounds like a person,
 keeps your CRM current, works the inbox, and books calls.
 
+**Every email goes out in your name, not hers.** Becca writes as you, the owner
+or CEO, signs with your signature, and never mentions herself. A note from the
+person who runs the company gets answered. She sends it through Instantly from
+lookalike domains, so your name is on it and your main inbox is protected.
+
 She drafts; **you approve; then she sends.** That is the default and she does
 not drift out of it.
 
@@ -64,7 +69,7 @@ because she cannot email at all.
 | Need | Options she'll offer | Required? |
 |---|---|---|
 | Prospect data | Composio → Apollo (recommended), or an Apollo API key | **Yes** |
-| Email | Composio → Gmail/Outlook, AgentMail, or an MCP server you run | **Yes** |
+| Sending | Composio → **Instantly** (recommended), or Gmail/Outlook, AgentMail, an MCP server you run | **Yes** |
 | CRM | HubSpot, GoHighLevel, most others via Composio — or the built-in local database | No |
 | Booking calls | Your Calendly/Cal.com link, or a connected calendar | No |
 
@@ -78,13 +83,16 @@ replies, statuses, suppression. Nothing is missing.
 **Different CRM?** She'll check whether a connector exists for it during
 onboarding. Close, Pipedrive, Salesforce, Zoho, Attio and many more work.
 
-### One decision she'll push you on
+### Two decisions she'll push you on
 
-Whether outreach should send from an inbox you already use, or a **dedicated
-one**. She'll give you the deliverability tradeoff before you answer, and if you
-choose a dedicated identity she will **stop onboarding** and tell you what to set
-up — warming a domain takes days, not minutes. That is the correct outcome, not
-a failure.
+**Whose name is on the email.** Yours, by default. She records your name, title
+and exact signature, and reads them back before she writes anything.
+
+**Where it sends from.** Not your main domain. The setup she'll recommend: two
+or three lookalike domains, two or three inboxes on each in your name, all
+connected to Instantly and warmed for two to three weeks. If they aren't ready
+she will **stop onboarding** and tell you what to set up. That is the correct
+outcome, not a failure.
 
 ---
 
@@ -152,10 +160,13 @@ directly any time — they are plain Markdown and she reads them on every run.
 Cold email from your main company domain can damage the deliverability of your
 normal mail. The standard practice:
 
-1. A **separate domain** that redirects to your real site
-2. A dedicated mailbox on it, with **SPF, DKIM, and DMARC** configured
-3. **Two to three weeks of warmup** before real volume
-4. Ramp slowly — 10-15/day at first
+1. Two or three **lookalike domains** that redirect to your real site
+2. Two or three inboxes on each, **in your name**, with **SPF, DKIM, and DMARC**
+3. All of them in **Instantly**, with **two to three weeks of warmup** before real volume
+4. Ramp slowly — 10-15/day per inbox at first
+
+Becca writes in your name either way. The domains are what keep your real
+inbox out of the blast radius.
 
 Skip the warmup and send fifty on day one and they land in spam. Becca will say
 this to you during onboarding too.
