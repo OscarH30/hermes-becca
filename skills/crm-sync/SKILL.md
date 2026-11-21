@@ -1,6 +1,6 @@
 ---
 name: crm-sync
-description: Use whenever Becca needs to read or write a prospect, lead, activity, campaign membership, or status change, or hand an Interested lead to the owner. Works with whatever CRM the owner connected (Attio, HubSpot, GoHighLevel, Pipedrive, Salesforce, or any other the connector supports), falls back to a CSV or Google Sheet, and always keeps the local database (or a tracker table where there is no filesystem) as the send log and dedupe index. Also runs the pre-send checks, including campaign approval.
+description: Use whenever Becca needs to read or write a prospect, activity, campaign membership, or status change, or hand an Interested lead to the owner. The local database (or a tracker table where there is no filesystem) holds every prospect, send and campaign. The owner's CRM (Attio, HubSpot, GoHighLevel, Pipedrive, Salesforce, or any other the connector supports) receives only the lead-handoff record, with a CSV or Google Sheet fallback. Also runs the pre-send checks, including campaign approval.
 version: 1.2.0
 author: Vindex Consulting
 license: MIT
@@ -38,17 +38,24 @@ else, use its equivalent. The operation is what matters, not the spelling.
 
 ## The rule that matters most
 
-**The local record is always written, even when a CRM is connected.**
+**The local record is always written, even when a CRM is connected. It is the
+record of every prospect and every send.**
 
-The CRM is the owner's system of record. The local database (or the tracker table
-where there is no filesystem) is Becca's send log and dedupe index. If a CRM write
-fails because of a rate limit, an expired sign-in, or the network, the local write
-must still succeed, because "have I emailed this person before" has to be
-answerable offline. A missed dedupe means emailing someone twice, which is the
-fastest way to lose a prospect and a domain's reputation at once.
+The local database (or the tracker table where there is no filesystem) is Becca's
+send log and dedupe index. The owner's CRM receives only the lead-handoff record
+(Interested, and optionally Referral and Question with booking intent). Pool
+prospects, sends and campaign membership stay local. Never enroll a contact in a
+CRM sequence, workflow, automation or campaign: those can email people, and the
+owner has approved only the campaign they saw. Reading the CRM to dedupe is fine.
 
-Write local first, then the CRM. If the CRM write fails, log it, keep going, and
-report the backlog at the end of the run. Never drop the record.
+"Have I emailed this person before" has to be answerable offline, so the local
+write must succeed whatever the CRM does. A missed dedupe means emailing someone
+twice, which is the fastest way to lose a prospect and a domain's reputation at
+once.
+
+Write local first, then the handoff to the CRM. If the CRM write fails, use the
+fallback, log it, keep going, and report the backlog at the end of the run. Never
+drop the record.
 
 ## Backends
 
@@ -62,16 +69,17 @@ This works for any CRM the connector supports. Do not guess field or tool names.
 List what the connection offers, find the "create contact" and "create note"
 operations (and a deal or pipeline operation if the owner uses one), confirm the
 field mapping with the owner once, and write that mapping into `brain/config.md`
-so it is stable from then on. Typical mapping: prospect = a person or contact,
-company = a company or account, each send and each reply = a note or activity on
-the person (with the date, the touch number, and the bucket for replies), status =
-a status field, tag, or pipeline stage the owner chose. Examples of the details
-that differ by CRM, shown only as illustrations:
+so it is stable from then on. Typical mapping for a handoff: the lead = a person
+or contact, company = a company or account, the reply and the suggested next
+step = a note or activity on the person (with the date, the campaign and the
+bucket), stage = a status field, tag, or pipeline stage the owner chose. Do not
+use any sequence, workflow or enrollment feature. Examples of the details that
+differ by CRM, shown only as illustrations:
 
-- Attio: person and company records, notes on the person, a status field or tag.
-- HubSpot: Contact and Company, an Email engagement per send, `lifecyclestage`
-  set to `lead` on create.
-- GoHighLevel: Contact with tags, pipeline stage for status, a note per send. It
+- Attio: person and company records, a note on the person, a status field or tag.
+- HubSpot: Contact and Company, a note on the contact, `lifecyclestage` set to
+  `lead` on create.
+- GoHighLevel: Contact with tags, pipeline stage for status, a note. It
   requires the location ID on every call; if that is missing, stop and ask rather
   than writing into the wrong sub-account.
 - Pipedrive, Salesforce, and any other: a person or lead with the same mapping.
@@ -87,11 +95,11 @@ record below). A CSV is a file in the profile; a Google Sheet is written through
 the connected Google tool. Never overwrite existing rows, only append. Tell the
 owner where the file or sheet is.
 
-**3. `local`**: SQLite at `prospects.db`, schema in `scripts/init_db.py`. The
-internal store and send log, present wherever the agent has a filesystem. It is
-always written, whatever else is connected. A complete backend, not a
-placeholder: it holds prospects, sends, replies, campaigns, campaign contacts,
-and status history.
+**3. `local`**: SQLite at `prospects.db`, schema in `scripts/init_db.py` (safe to
+re-run; it upgrades an older database). The internal store and send log, present
+wherever the agent has a filesystem. It is always written, whatever else is
+connected. A complete backend, not a placeholder: it holds prospects, sends,
+replies, campaigns, campaign contacts, and status history.
 
 **4. `tracker_table`**: for platforms with no filesystem (a chat-only project, for
 example). A simple table kept in your brain notes, one row per prospect, with
@@ -101,7 +109,9 @@ date of each touch, next touch date, reply bucket, notes. Update it after every
 send and every reply, and show the owner the current table when asked so they can
 copy it into a spreadsheet. It does the same job as the local database and must be
 checked the same way before every send. Keep a second small table of campaigns
-(id, name, version, status, approval message id and time, approver, contacts).
+(id, name, current version, approved version, status, approval email message id and
+sent time, approval reply message id and time, approver, last handled message id,
+contacts). Mark each prospect row with the version and the approved hash.
 
 ## The lead-handoff record
 
@@ -128,12 +138,15 @@ the chat.
 
 ## Campaign fields
 
-Each prospect that enters a campaign carries: the campaign id, the campaign
-version, and the approval message id (the id of the owner's approval reply). The
-campaign itself carries its name, status, the approval email message id and sent
-time, the approval reply message id and time, the approver address, and the
-Instantly campaign id. Write them to the local record. Put the campaign id on the
-CRM record or note when a lead is handed off.
+The campaign version fields live in the local record, not in the CRM. Each
+prospect that enters a campaign carries: the campaign id, the campaign version it
+was included in, and the approved hash of its words (the approval covers exactly
+those words). The campaign itself carries its name, status, current version and
+approved version, the approval email message id and sent time, the approval reply
+message id and time, the approver address, the last handled message id and last
+checked time, and the Instantly campaign id. Write them to the local record. Put
+only the campaign name and id on the CRM record or note when a lead is handed
+off.
 
 ## Status vocabulary
 
@@ -169,6 +182,7 @@ for another one. It becomes `queued` only when its campaign is approved.
 | `awaiting_approval` | The approval email was sent, waiting for the owner's reply |
 | `revising` | The owner asked for changes. Next version in progress |
 | `approved` | A valid approval was received. Not yet loaded |
+| `loading` | A lock set right before the Instantly upload, so two jobs never load the same campaign twice |
 | `launched` | Loaded into Instantly (or sending started) |
 | `held` | Unapproved after `approval_reminder_days`, reminder sent. No new campaign until the owner replies |
 | `completed` | Every touch went out or was cancelled |
@@ -182,14 +196,19 @@ reply.
 
 Query the local record (database or tracker table) for the email address and
 confirm all of:
-- **the contact's campaign is `approved` or `launched`, and the contact is in the
-  campaign version the owner approved.** A contact may be loaded only if its
-  campaign is approved. A campaign that is `drafting`, `awaiting_approval`,
-  `revising`, `held`, or `cancelled` loads nothing
+- **the contact's campaign is `approved`, `loading` or `launched`, and the contact
+  is in the campaign version the owner approved** (its version equals the
+  campaign's approved version and its approved hash matches the words). A contact
+  may be loaded only if its campaign is approved. A campaign that is `drafting`,
+  `awaiting_approval`, `revising`, `held`, or `cancelled` loads nothing
 - not present with any terminal status
-- not on `brain/suppression.md`
-- **first touches only:** no send logged to this address in the last 48 hours
-  (this catches the same person arriving from two lists)
+- not on `brain/suppression.md` and not in the database `suppression` table
+  (the file is the master list and the table mirrors it; write both, check both)
+- **first touches only:** the contact's status is `new` (or `queued` in this
+  approved campaign). Anything else, including `contacted` imported from the
+  owner's brain, is not eligible for a first touch. Also no send logged to this
+  address in the last 48 hours (this catches the same person arriving from two
+  lists)
 - **follow-ups (touch 2 and 3):** the previous touch is logged, the spacing in
   `sequence_spacing_days` has elapsed (touch 2 goes out 2 days after touch 1), and
   there is no reply, stop, or bounce

@@ -76,15 +76,15 @@ env_requires:
     required: false
     default: ""
   - name: BECCA_APPROVAL_EMAIL
-    description: "Optional pre-fill. The address where Becca emails your daily campaign for approval. Onboarding confirms it with you, and brain/config.md overrides it."
+    description: "Optional pre-fill. A suggested address where Becca emails your daily campaign for approval. It never counts as the approval address until you confirm it in a live chat with Becca, and brain/config.md overrides it."
     required: false
     default: ""
   - name: BECCA_CAMPAIGN_SIZE
-    description: "Optional pre-fill. Contacts in each daily campaign (default 50). Onboarding confirms it with you, and brain/config.md overrides it."
+    description: "Optional pre-fill. The most contacts in a daily campaign (default 50, a ceiling). Onboarding sizes it to what your sending inboxes can handle and confirms it with you, and brain/config.md overrides it."
     required: false
     default: "50"
   - name: BECCA_CRM
-    description: "Optional pre-fill. Which CRM you use (for example attio, hubspot, gohighlevel, pipedrive, salesforce), or blank for none. Onboarding confirms it with you, and brain/config.md overrides it."
+    description: "Optional pre-fill. Which CRM you use (for example attio, hubspot, gohighlevel, pipedrive, salesforce), or blank for none. Onboarding confirms it with you, and brain/config.md overrides it. Pre-fills never count as approval or as confirmed settings until you confirm them."
     required: false
     default: ""
   - name: BECCA_CRM_FALLBACK

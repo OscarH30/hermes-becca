@@ -175,7 +175,8 @@ is worse than a short one, because it burns sends and domain reputation.
 - Personal domain (`@gmail`, `@yahoo`, `@hotmail`) when a business email exists.
 - Already known. **Check every time**, against all four:
   - the local database (any status, including past prospects the owner's brain
-    listed as previously contacted),
+    listed as previously contacted; those imported rows stay `contacted` and are
+    never eligible for a campaign unless the owner reversed the import in chat),
   - the owner's CRM, if one is connected (existing contacts, customers, open
     deals), or the CSV or Google Sheet fallback,
   - the brain (`brain/` customers, past wins, anyone named in `business.md` or
@@ -183,6 +184,8 @@ is worse than a short one, because it burns sends and domain reputation.
   - the Instantly campaigns already running, where the connection lets you see
     them.
 - On `brain/suppression.md` (the do-not-contact list), by email or by domain.
+  That file is the master list, and the database `suppression` table mirrors
+  it. Check both.
 - Same domain as another prospect in this pool (one person per company per
   campaign, unless the owner asked otherwise).
 - Title does not actually match the ICP. "Close enough" titles are how a list
@@ -218,7 +221,12 @@ Apollo, treg.to or the open web to check it.
 For each qualified prospect, write a record through the `crm-sync` skill with:
 name, title, company, domain, email, LinkedIn, company size, industry, the
 **one sourced fact** as the signal (`signal`), where you saw it (`signal_source`),
-the Apollo person ID (if any), the source of the email, and status `new`.
+when you checked it (`researched_at`), the Apollo person ID (if any), the source of the email, and status `new`.
+
+Prospect records stay in the local database (or the tracker table). The owner's
+CRM is not where the pool lives: it only receives lead-handoff records when
+someone replies Interested, so never push pool prospects into it, and never
+enroll anyone in a CRM sequence or workflow. Reading the CRM to dedupe is fine.
 
 The signal and its source are not optional. They are what the cold email is
 built on, and what the owner sees next to every contact in the approval email.
@@ -231,12 +239,21 @@ reconcile with what is stored.
 
 ## Size the pool for the campaign
 
-The daily campaign needs about `campaign_size` contacts (default 50;
-`first_campaign_size`, default 10, for the first one). Attrition is real, so
-search for more than you need, and stop when you have enough qualified contacts.
-If you cannot reach the size after reasonable searching, hand over the smaller
-pool and say so. A short campaign is fine. Padding it with unverified or
-unsourced contacts is not.
+The daily campaign needs up to `campaign_size` contacts (a ceiling, default 50;
+`first_campaign_size`, default 10, for the first one). Onboarding sizes
+`campaign_size` to what the sending capacity allows, about
+(sending inboxes x `daily_send_cap`) / 3 new contacts a day, because each contact
+needs three sends. Attrition is real, so search for more than you need, and
+stop adding when the pool already holds `campaign_size` ready contacts
+(researched, verified, status `new`, not held in another campaign). If you cannot
+reach the size after reasonable searching, hand over the smaller pool and say
+so. A short campaign is fine. Padding it with unverified or unsourced contacts
+is not.
+
+**Keep the pool fresh.** A researched contact whose `researched_at` is older than 14 days is re-checked
+before use: confirm the email still verifies, the fact is still true and still
+sourced, and they are not on the suppression list or in the CRM now. Drop or
+refresh anyone who fails.
 
 ## Daily run
 
@@ -244,11 +261,12 @@ Where scheduled jobs are available (on Hermes, the daily prospecting cron job),
 this skill builds the pool for the day's campaign: `campaign_size` qualified
 contacts, or `first_campaign_size` for the first one. If `daily_prospect_target`
 in `brain/config.md` is set, treat it as a floor on how many candidates to
-search, never as a reason to ship fewer or weaker contacts. Elsewhere, the owner
-can ask for it any time. The pool goes to `outreach-campaign`, which writes the
-emails and emails the owner one approval email. If a campaign is already
-awaiting approval, or is held, do not build another pool unless the owner asked.
-The run reports:
+search per day, not a cap, and never as a reason to ship fewer or weaker
+contacts. Stop adding once the pool already holds `campaign_size` ready
+contacts. Elsewhere, the owner can ask for it any time. The pool goes to
+`outreach-campaign`, which writes the emails and emails the owner one approval
+email. If a campaign is already awaiting approval, or is held, do not run a new
+pool build unless the owner asked. The run reports:
 
 ```
 Prospected 80, verified 62, qualified 52, dropped 28
