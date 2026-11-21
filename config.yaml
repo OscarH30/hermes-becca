@@ -1,4 +1,4 @@
-# ─────────────────────────────────────────────────────────────────────
+# ---------------------------------------------------------------------
 # Model
 #
 # Defaults to Nous Portal, which is what `hermes setup --portal` gives you
@@ -7,9 +7,9 @@
 # On a different provider? One command, no file editing:
 #     hermes -p <agent> model
 #
-# Or edit the two lines below (e.g. provider: anthropic,
-# default: claude-sonnet-4). Your change survives `hermes profile update`.
-# ─────────────────────────────────────────────────────────────────────
+# Or edit the two lines below to another provider and model. Your change
+# survives `hermes profile update`.
+# ---------------------------------------------------------------------
 model:
   default: z-ai/glm-5.2
   provider: nous
