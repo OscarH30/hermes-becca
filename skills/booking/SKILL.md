@@ -1,7 +1,7 @@
 ---
 name: booking
 description: Use when a prospect wants to talk and Becca needs to get a call on the calendar. Prefers the owner's booking link, falls back to proposing real open slots from the connected calendar, and confirms the meeting into the CRM.
-version: 1.0.0
+version: 1.1.0
 author: Vindex Consulting
 license: MIT
 metadata:
@@ -17,51 +17,59 @@ remove the steps.
 
 ## Check your tools before you start
 
-You reach Apollo, the inbox, the CRM, and the calendar through whatever
-onboarding wired into this profile — MCP servers, or documented APIs using keys
-in `.env`. Look at what you actually have.
+You reach the inbox, the CRM, and the calendar through whatever onboarding
+connected for you: the platform's own connector, or Composio. Keys live in the
+platform's secure settings (on Hermes, the profile's `.env`), never in chat. Look
+at what you actually have.
 
-**Missing a tool this skill needs → stop and run `onboarding`.** Do not fall back
-to a CLI you happen to find on the shell. A tool nobody granted you is a tool
+**Missing a tool this skill needs, and no `brain/access.md` with the owner's yes:
+stop and run `onboarding`.** Do not fall back to a command line tool, saved login,
+or browser session you happen to find. A tool nobody granted you is a tool
 pointed at an account nobody chose, and cold email from the wrong mailbox cannot
-be recalled.
+be recalled. In manual mode (recorded in `brain/access.md`) you draft the reply
+and the owner sends it.
 
-Tool names below are the common Composio slugs. If onboarding wired something
-else, use its equivalent — the operation is what matters, not the spelling.
+Tool names below are the common Composio slugs. If onboarding connected something
+else, use its equivalent. The operation is what matters, not the spelling.
 
-## Three paths, in order of preference
+## One rule for an Interested reply
+
+1. **A booking link is set:** send it.
+2. **No link, but a calendar is connected:** offer two specific times that you
+   have checked are free.
+3. **Neither:** draft the reply, flag it to the owner as needing a time, and let
+   the owner fill it in.
+
+Never propose a time you have not verified is free.
 
 **1. Booking link (default, and usually best).**
-If `BECCA_BOOKING_LINK` or `booking_link` in `brain/config.md` is set, send it.
-No API, no auth, no failure mode, and it respects whatever buffers and hours the
-owner already configured in Calendly or Cal.com. Do not over-engineer past this.
+If `booking_link` in `brain/config.md` (or `BECCA_BOOKING_LINK` where the
+platform uses environment settings) is set, send it. No sign-in, no failure mode,
+and it respects whatever buffers and hours the owner already configured in
+Calendly or Cal.com. Do not over-engineer past this.
 
-> Easiest is probably my calendar — grab whatever works: <link>
+> Easiest is probably my calendar. Grab whatever works: <link>
 
-**2. Propose real times from the connected calendar.**
-Better for senior prospects, who often will not click a scheduling link.
-
-```bash
-composio execute "GOOGLECALENDAR_FIND_FREE_SLOTS" -d '{...}'
-```
-
-Use `accounts.googlecalendar` from `brain/config.md`; never the default — with
-several calendars connected you would propose someone else's free time.
+**2. Offer two verified times from the connected calendar.**
+Use the calendar the owner chose at onboarding, the one named in
+`brain/config.md`. Never pick a different one: with several calendars connected
+you would propose someone else's free time. Call the connected calendar tool
+(through Composio or the platform connector, for example a "find free slots"
+operation) to get the owner's open times.
 
 Then offer **two** specific times, in **their** timezone, inferred from the
-company location. Two, not five — a menu is work.
+company location. Two, not five, because a menu is work.
 
 > Would Thursday 10:15 or Friday 2:30 your time work? Happy to work around you.
 
-When they pick one, create the event with `GOOGLECALENDAR_CREATE_EVENT`,
-including them as an attendee, a real title, and a one-line agenda in the
-description so the owner walks in knowing the context.
+When they pick one, create the event with the calendar tool's create-event
+operation, including them as an attendee, a real title, and a one-line agenda in
+the description so the owner walks in knowing the context.
 
 **3. Hand it to the owner.**
 If no calendar is connected and no link is set, draft the reply, flag it as
 needing a time, and let the owner fill it in. Say so clearly rather than
-inventing availability. Never propose a slot you have not verified is free —
-double-booking the owner is worse than a slower reply.
+inventing availability. Double-booking the owner is worse than a slower reply.
 
 ## Always
 
@@ -78,7 +86,7 @@ double-booking the owner is worse than a slower reply.
 
 Reschedules are normal. Offer new times once, cheerfully, no guilt.
 
-For a no-show: one follow-up, same day, assuming good faith — things come up.
+For a no-show: one follow-up, same day, assuming good faith, because things come up.
 If that goes unanswered, set status back to `contacted`, note the no-show, and
 leave it. Do not chase a third time.
 

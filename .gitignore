@@ -1,4 +1,4 @@
-# ── Credentials & secrets — NEVER commit ──────────────────────────────
+# -- Credentials & secrets - NEVER commit ------------------------------
 auth.json
 .env
 .env.EXAMPLE
@@ -7,7 +7,7 @@ auth.json
 credentials.json
 client_secret*.json
 
-# ── Runtime databases & state ─────────────────────────────────────────
+# -- Runtime databases & state -----------------------------------------
 state.db
 state.db-shm
 state.db-wal
@@ -22,7 +22,7 @@ auth.lock
 active_profile
 .update_check
 
-# ── User data — NEVER commit ──────────────────────────────────────────
+# -- User data - NEVER commit ------------------------------------------
 memories/
 sessions/
 logs/
@@ -33,14 +33,14 @@ brain/
 prospects.db
 prospects.db-*
 
-# ── Caches & generated artifacts ──────────────────────────────────────
+# -- Caches & generated artifacts --------------------------------------
 image_cache/
 audio_cache/
 document_cache/
 browser_screenshots/
 cache/
 
-# ── Infrastructure ────────────────────────────────────────────────────
+# -- Infrastructure ----------------------------------------------------
 hermes-agent/
 .worktrees/
 profiles/
@@ -49,15 +49,15 @@ node_modules/
 __pycache__/
 *.pyc
 
-# ── User customization namespace ──────────────────────────────────────
+# -- User customization namespace --------------------------------------
 local/
 
-# ── Checkpoints & backups ─────────────────────────────────────────────
+# -- Checkpoints & backups ---------------------------------------------
 checkpoints/
 sandboxes/
 backups/
 
-# ── Logs & OS cruft ───────────────────────────────────────────────────
+# -- Logs & OS cruft ---------------------------------------------------
 errors.log
 .hermes_history
 .DS_Store
