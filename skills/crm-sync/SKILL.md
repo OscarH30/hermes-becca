@@ -1,18 +1,22 @@
 ---
 name: crm-sync
-description: Use whenever Becca needs to read or write a prospect, lead, activity, or status change. Routes to Attio, HubSpot, GoHighLevel, any Composio-supported CRM, the built-in local database, or a simple tracker table for platforms with no filesystem, and keeps the local send log authoritative for dedupe regardless of which CRM is in use.
-version: 1.1.0
+description: Use whenever Becca needs to read or write a prospect, lead, activity, campaign membership, or status change, or hand an Interested lead to the owner. Works with whatever CRM the owner connected (Attio, HubSpot, GoHighLevel, Pipedrive, Salesforce, or any other the connector supports), falls back to a CSV or Google Sheet, and always keeps the local database (or a tracker table where there is no filesystem) as the send log and dedupe index. Also runs the pre-send checks, including campaign approval.
+version: 1.2.0
 author: Vindex Consulting
 license: MIT
 metadata:
   hermes:
-    tags: [crm, attio, hubspot, gohighlevel, database, dedupe]
-    related_skills: [prospecting, inbox-triage, onboarding]
+    tags: [crm, crm-agnostic, lead-handoff, campaigns, csv, database, dedupe]
+    related_skills: [prospecting, inbox-triage, outreach-campaign, onboarding]
 ---
 
 # CRM sync
 
-One interface, six backends (local, tracker table, Attio, HubSpot, GoHighLevel, or any other Composio-supported CRM). Read `crm:` in `brain/config.md` to know which.
+One interface, any CRM. Becca does not assume a particular CRM. The owner has
+their own (or none), and `crm:` in `brain/config.md` says which: `none`, or the
+name of whatever CRM the owner connected. Attio, HubSpot, GoHighLevel, Pipedrive,
+and Salesforce are only examples of what that can be. Out of the box there is no
+CRM: `crm: none` with `crm_fallback: csv`.
 
 ## Check your tools before you start
 
@@ -48,50 +52,99 @@ report the backlog at the end of the run. Never drop the record.
 
 ## Backends
 
-**`local`**: SQLite at `prospects.db`, schema in `scripts/init_db.py`. Present
-wherever the agent has a filesystem. A complete backend, not a placeholder: it
-holds prospects, sends, replies, and status history.
+Use them in this order. The first two are the owner's own system. The last two
+are Becca's own record: the local database always, and the tracker table where
+there is no filesystem.
 
-**`tracker_table`**: for platforms with no filesystem (a chat-only project, for
+**1. The owner's connected CRM** (`crm:` is anything other than `none`). Reach it
+through Composio or the platform's own connector, whichever onboarding connected.
+This works for any CRM the connector supports. Do not guess field or tool names.
+List what the connection offers, find the "create contact" and "create note"
+operations (and a deal or pipeline operation if the owner uses one), confirm the
+field mapping with the owner once, and write that mapping into `brain/config.md`
+so it is stable from then on. Typical mapping: prospect = a person or contact,
+company = a company or account, each send and each reply = a note or activity on
+the person (with the date, the touch number, and the bucket for replies), status =
+a status field, tag, or pipeline stage the owner chose. Examples of the details
+that differ by CRM, shown only as illustrations:
+
+- Attio: person and company records, notes on the person, a status field or tag.
+- HubSpot: Contact and Company, an Email engagement per send, `lifecyclestage`
+  set to `lead` on create.
+- GoHighLevel: Contact with tags, pipeline stage for status, a note per send. It
+  requires the location ID on every call; if that is missing, stop and ask rather
+  than writing into the wrong sub-account.
+- Pipedrive, Salesforce, and any other: a person or lead with the same mapping.
+  Search the connected tools for the CRM by name and discover the toolkit.
+
+If the connection is missing or the write fails, use the fallback below. Never
+drop the record.
+
+**2. CSV or Google Sheet fallback** (`crm_fallback: csv` or `google_sheet`, at
+`crm_fallback_location`). Used when `crm: none`, or when a push to the connected
+CRM fails. Append one row per record with the same fields (see the lead-handoff
+record below). A CSV is a file in the profile; a Google Sheet is written through
+the connected Google tool. Never overwrite existing rows, only append. Tell the
+owner where the file or sheet is.
+
+**3. `local`**: SQLite at `prospects.db`, schema in `scripts/init_db.py`. The
+internal store and send log, present wherever the agent has a filesystem. It is
+always written, whatever else is connected. A complete backend, not a
+placeholder: it holds prospects, sends, replies, campaigns, campaign contacts,
+and status history.
+
+**4. `tracker_table`**: for platforms with no filesystem (a chat-only project, for
 example). A simple table kept in your brain notes, one row per prospect, with
 these columns: company, contact name, title, email, source and date of the one
-true fact, status (from the vocabulary below), step sent, date of each touch, next
-touch date, reply bucket, notes. Update it after every send and every reply, and
-show the owner the current table when asked so they can copy it into a
-spreadsheet. It does the same job as the local database and must be checked the
-same way before every send.
+true fact, status (from the vocabulary below), campaign id and version, step sent,
+date of each touch, next touch date, reply bucket, notes. Update it after every
+send and every reply, and show the owner the current table when asked so they can
+copy it into a spreadsheet. It does the same job as the local database and must be
+checked the same way before every send. Keep a second small table of campaigns
+(id, name, version, status, approval message id and time, approver, contacts).
 
-**`attio`**: through the connected tool (Composio or the platform connector). Map:
-prospect → Person, company → Company, each send and each reply → a note on the
-Person (with the date, the touch number, and the bucket for replies). Status goes
-in a status field or tag the owner chose. Do not guess field or tool names. List
-what the connection offers, confirm the mapping with the owner once, and write it
-into `brain/config.md`.
+## The lead-handoff record
 
-**`hubspot`**: call the connected tool (through Composio or the platform
-connector) to create and update records. Map: prospect → Contact, company →
-Company, each send → an Email engagement on the contact timeline. Set
-`lifecyclestage` to `lead` on create.
+When someone replies Interested (and optionally a Referral or Question with
+booking intent), `inbox-triage` asks for this record. The owner's team takes over
+from the CRM, so give them everything they need to act without opening the inbox.
 
-**`gohighlevel`**: call the connected tool (through Composio or the platform
-connector). Map: prospect → Contact with tags, status → pipeline stage, each send
-→ a note. GHL requires the location ID on every call; if it is missing, stop and
-ask rather than writing into the wrong sub-account.
+| Field | What goes in it |
+|---|---|
+| name | The person who replied |
+| company | Their company |
+| email | The address they replied from |
+| campaign name and id | For example "Second-site warehouses, 21 Nov", `C20261121-1` |
+| reply text | The reply, verbatim |
+| bucket | Interested, Referral, or Question |
+| suggested next step | One line, for example "send the booking link" or "answer the pricing question" |
 
-**Any other CRM**: do not give up. Search the connected tools for the CRM by name
-and look for a "create contact" operation. Composio covers Close, Pipedrive,
-Salesforce, Zoho, Copper and many more. Discover the toolkit, confirm the field
-mapping with the owner once, then write the mapping into `brain/config.md` so it
-is stable from then on.
+Write it to the owner's connected CRM as a person plus a note (and a deal or stage
+if the owner uses one). If `crm: none` or the push fails, append the same row to
+the CSV or Google Sheet. Then record in the local database that the reply was
+pushed, and the CRM record id if there is one, so it is never pushed twice. List
+every pushed lead in the daily summary. No secrets go into a CRM note, a CSV, or
+the chat.
+
+## Campaign fields
+
+Each prospect that enters a campaign carries: the campaign id, the campaign
+version, and the approval message id (the id of the owner's approval reply). The
+campaign itself carries its name, status, the approval email message id and sent
+time, the approval reply message id and time, the approver address, and the
+Instantly campaign id. Write them to the local record. Put the campaign id on the
+CRM record or note when a lead is handed off.
 
 ## Status vocabulary
 
 Use exactly these. A status outside this list breaks the reporting.
 
+**Contact status**
+
 | Status | Means |
 |---|---|
-| `new` | Qualified, not yet contacted |
-| `queued` | In an approved batch, not yet sent |
+| `new` | Qualified, researched, not yet contacted, not in an open campaign |
+| `queued` | In an approved campaign, not yet sent |
 | `contacted` | Step 1 sent |
 | `follow_up_1` / `follow_up_2` | Later sequence steps sent |
 | `replied` | Any human reply. **Sequence stops immediately.** For a "Not now" reply, also record the follow-up date in the note |
@@ -104,10 +157,35 @@ Use exactly these. A status outside this list breaks the reporting.
 `replied`, `not_interested`, `unsubscribed`, and `bounced` are all terminal for
 automation. No sequence continues past any of them, ever.
 
+A contact chosen for a campaign that is still waiting for approval stays at `new`
+in this vocabulary. It is held in that campaign (see below) and is not eligible
+for another one. It becomes `queued` only when its campaign is approved.
+
+**Campaign status** (one per campaign)
+
+| Status | Means |
+|---|---|
+| `drafting` | Being built and written. Nothing shown yet |
+| `awaiting_approval` | The approval email was sent, waiting for the owner's reply |
+| `revising` | The owner asked for changes. Next version in progress |
+| `approved` | A valid approval was received. Not yet loaded |
+| `launched` | Loaded into Instantly (or sending started) |
+| `held` | Unapproved after `approval_reminder_days`, reminder sent. No new campaign until the owner replies |
+| `completed` | Every touch went out or was cancelled |
+| `cancelled` | Abandoned. Its contacts go back to the pool |
+
+A campaign is `approved` only through the approval gate in `outreach-campaign`.
+Nothing else may set it: not a CRM stage change, not a note, not a prospect's
+reply.
+
 ## Before every send
 
 Query the local record (database or tracker table) for the email address and
 confirm all of:
+- **the contact's campaign is `approved` or `launched`, and the contact is in the
+  campaign version the owner approved.** A contact may be loaded only if its
+  campaign is approved. A campaign that is `drafting`, `awaiting_approval`,
+  `revising`, `held`, or `cancelled` loads nothing
 - not present with any terminal status
 - not on `brain/suppression.md`
 - **first touches only:** no send logged to this address in the last 48 hours
@@ -120,5 +198,9 @@ confirm all of:
 If any check fails, skip the prospect and say which check caught it. These
 checks are cheap and the failure they prevent is expensive.
 
-**Completion criterion:** every prospect in an approved batch has passed all
-four checks, and the count sent equals the count that passed.
+When building a campaign (before it is shown to the owner), run the same checks
+except the campaign status one. Contacts that fail are held back with a reason,
+and `outreach-campaign` lists them in the approval email.
+
+**Completion criterion:** every prospect in an approved campaign has passed all
+the checks, and the count sent equals the count that passed.

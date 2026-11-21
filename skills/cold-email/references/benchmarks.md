@@ -15,7 +15,7 @@ These are industry numbers for orientation. They do not change the rules in SKIL
 
 ## Realistic Funnel Model
 
-500 emails → 100 opens (20%) → 25 replies (5%) → 8 positive replies (30%) → 4 meetings (50%) → 1 client (25% close). ~**0.2% end-to-end conversion** for average performers.
+500 emails, 100 opens (20%), 25 replies (5%), 8 positive replies (30%), 4 meetings (50%), 1 client (25% close). ~**0.2% end-to-end conversion** for average performers.
 
 ## Performance Levers (ranked by impact)
 
@@ -57,7 +57,7 @@ Reply rates dropped from 7 to 8% (2020 to 2022) to 4 to 5.8% (2024 to 2025), ~15
 9. **No CTA**: Without a clear next step, momentum dies
 10. **"Just checking in" follow-ups**: "I never heard back" = 12% drop in bookings
 11. **Wrong tone for audience**: Founder ≠ RevOps lead ≠ sales leader
-12. **Jargon/buzzwords**: "Leverage synergistic platform" → "We help you book more meetings"
+12. **Jargon/buzzwords**: "Leverage synergistic platform" becomes "We help you book more meetings"
 13. **Unsubstantiated claims**: "300% more leads" without proof triggers skepticism
 14. **Too many contacts per company**: 1 to 2 people = 7.8% reply; 10+ = 3.8%
 15. **Fake urgency**: Fake "Re:" / "Fwd:" / countdown timers destroy trust
@@ -76,7 +76,7 @@ North America: 4.1% response. Europe: 3.1%. Asia-Pacific: 2.8%. Shorter, more di
 
 | Expert         | Core Method                                                     | Best For                                        |
 | -------------- | --------------------------------------------------------------- | ----------------------------------------------- |
-| A. Berman       | 3C's: Compliment → Case Study → CTA                             | High-ticket B2B services, agencies              |
+| A. Berman       | 3C's: Compliment then Case Study then CTA                             | High-ticket B2B services, agencies              |
 | Josh Braun     | "Poke the Bear", neutral questions exposing invisible problems | Empathy-driven consultative selling             |
 | Kyle Coleman   | Systematic research + AI personalization at scale               | Bridging mass outreach and deep personalization |
 | Becc Holland   | Psychographic personalization, Premise Buckets                  | Combining personalization with relevance        |

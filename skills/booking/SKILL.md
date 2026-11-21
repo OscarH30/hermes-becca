@@ -1,7 +1,7 @@
 ---
 name: booking
-description: Use when a prospect wants to talk and Becca needs to get a call on the calendar. Prefers the owner's booking link, falls back to proposing real open slots from the connected calendar, and confirms the meeting into the CRM.
-version: 1.1.0
+description: Use when a prospect wants to talk and Becca needs to get a call on the calendar. Prefers the owner's booking link, falls back to proposing real open slots from the connected calendar, and confirms the meeting into the owner's CRM. Interested leads go to the CRM for the owner's team through crm-sync.
+version: 1.2.0
 author: Vindex Consulting
 license: MIT
 metadata:
@@ -14,6 +14,12 @@ metadata:
 
 The moment someone says yes, every extra step loses some of them. Your job is to
 remove the steps.
+
+An Interested reply is also pushed to the owner's CRM through `crm-sync` (that is
+`inbox-triage`'s job), and the owner's team takes over from there. This skill is
+the booking part: the link, the times, the confirmation. Replies to prospects are
+drafted and shown to the owner as before. That is separate from campaign
+approval, which covers only the campaign emails.
 
 ## Check your tools before you start
 
