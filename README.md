@@ -40,7 +40,9 @@ of it.
    seven buckets. Interested leads go to your CRM (or a Google Sheet or CSV if
    you have none) and are listed in the daily summary. Your team takes it from
    there. The CRM gets only your hot leads. Every prospect and every send stays in
-   her own database, so nothing in your CRM can be emailed by accident.
+   her own database, so nothing in your CRM can be emailed by accident. Any
+   reply she drafts to a prospect waits in the daily summary for your yes, typed
+   by you in a live chat, one yes per draft.
 
 How big is a campaign? Up to 50 is the ceiling. Each contact gets three emails,
 so the real number is about (sending inboxes x daily cap per inbox) / 3 new
@@ -115,8 +117,9 @@ For agents that cannot open links or connect tools:
 
 In this mode there is no email channel and no scheduled run. Becca shows you the
 full campaign in chat, you approve it by typing a message of your own that names
-the campaign id (pasted text never counts), and you paste and send by hand. Everything else, the research, the voice, the
-three-touch sequence and the reply sorting, works the same.
+the campaign id and version (pasted text never counts), and you paste and send
+by hand. Everything else, the research, the voice, the three-touch sequence and
+the reply sorting, works the same.
 
 ---
 
@@ -160,7 +163,7 @@ secrets or connector settings). Never in the chat.
 |---|---|---|
 | An outreach agent with a job description it follows every time | the rules in `SOUL.md` and the job description in `AGENT-SETUP.md` | all of them |
 | A one-page ideal buyer profile built from your last ten wins, not your pitch deck | the onboarding interview, saved as `brain/icp.md` | `onboarding` |
-| Ten researched cold emails, under 90 words, one small ask | your first campaign is ten contacts: find, verify and research them, write and score the drafts, and email them to you for approval. Daily campaigns after that are about 50 | `prospecting`, `cold-email`, `humanizer`, `outreach-campaign` |
+| Ten researched cold emails, under 90 words, one small ask | your first campaign is ten contacts or fewer: find, verify and research them, write and score the drafts, and email them to you for approval. Daily campaigns after that are about 50 | `prospecting`, `cold-email`, `humanizer`, `outreach-campaign` |
 | A three-touch sequence that follows up without sounding pushy | day 1, day 3, day 7, then stop. One campaign approval covers all three touches | `cold-email`, `outreach-campaign` |
 | A reply playbook | sorts every reply into seven buckets: Interested, Question, Not now, Referral, No, Stop, Auto-reply | `inbox-triage` |
 | A checklist for protecting your main email address | lookalike domains, SPF, DKIM, DMARC, warmup, daily caps | `outreach-campaign`, `onboarding` |
@@ -236,7 +239,7 @@ hermes -p becca cron tick      # activate the schedule
 |---|---|
 | Weekdays 8:00 | Daily prospecting: finds and researches contacts that match your ideal buyer profile and your offer |
 | Weekdays 9:00 | Daily campaign for approval: builds one campaign of up to 50 contacts, writes every email, **emails it to you for approval** |
-| Weekdays, hourly | Campaign approval check: looks for your approval reply and only reports when something changed. Loads and sends only a campaign you approved, from your approval address |
+| Weekdays, hourly | Campaign approval check: looks for your approval reply, posts a one-line status each run, and only reports more when something changed. Loads and sends only a campaign you approved, from your approval address |
 | Every 2 hours | Inbox sweep: opt-outs first, stops sequences on reply, drafts responses, sends interested leads to your CRM |
 
 She builds a new campaign only when none is waiting for your approval. If you
@@ -256,7 +259,8 @@ reach.
 
 Coming from 1.4.0? After the update, tell Becca **"upgrade my database"**. She
 runs `scripts/init_db.py` (safe to re-run, it keeps your data) and asks the
-approval questions again: your approval email, your CRM and your campaign size.
+approval questions again, connects and tests your approval channel, records your
+approval email, your CRM and your campaign size, and then upgrades the database.
 
 ---
 
