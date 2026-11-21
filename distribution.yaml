@@ -1,7 +1,8 @@
 name: becca
-# 1.4.0: set up from one line on any agent (Grok Bot, Hermes, Claude or ChatGPT projects); onboarding interviews on the last ten customers, then connects Apollo, treg.to, Instantly, Attio and Cal.com one at a time; adds treg.to to prospecting.
-version: 1.4.0
-description: "Cold outreach SDR. Finds prospects with Apollo and treg.to, writes human-sounding cold email, keeps your CRM current, works the inbox, and books calls. Approve-first by default."
+# 1.5.0: brain-first onboarding (pull from your company brain or build one by interview); any CRM or a CSV or Google Sheet; one new campaign each weekday, approved by email per campaign before anything is sent; Interested replies pushed to your CRM.
+# 1.4.0: set up from one line on any agent; onboarding interviews on the last ten customers; adds treg.to.
+version: 1.5.0
+description: "Cold outreach SDR. Finds prospects with Apollo and treg.to, writes human-sounding cold email, builds one campaign a day and emails it to you for approval, works the inbox, and pushes interested replies to your CRM. Nothing sends until you approve that campaign by email."
 hermes_requires: ">=0.20.0"
 author: "Vindex Consulting"
 license: "MIT"
@@ -35,7 +36,7 @@ distribution_owned:
 # Never paste a key into the chat. Keys go in this profile's .env.
 env_requires:
   - name: COMPOSIO_API_KEY
-    description: "Composio API key. The recommended path for Apollo, Instantly, Attio, Gmail, and calendar. Get one free at composio.dev. Onboarding walks you through it."
+    description: "Composio API key. The recommended path for Apollo, Instantly, your CRM, Gmail, and calendar. Get one free at composio.dev. Onboarding walks you through it."
     required: false
     default: ""
   - name: APOLLO_API_KEY
@@ -47,7 +48,7 @@ env_requires:
     required: false
     default: ""
   - name: INSTANTLY_API_KEY
-    description: "Instantly API key: the recommended sending path. Becca loads approved emails into your campaign and Instantly sends them in your name from your warmed lookalike domains. Only needed if you are NOT connecting Instantly through Composio."
+    description: "Instantly API key: the recommended sending path. Becca loads each approved campaign and Instantly sends them in your name from your warmed lookalike domains. Only needed if you are NOT connecting Instantly through Composio."
     required: false
     default: ""
   - name: AGENTMAIL_API_KEY
@@ -55,7 +56,7 @@ env_requires:
     required: false
     default: ""
   - name: ATTIO_API_KEY
-    description: "Attio API key. Only if you use Attio as your CRM and are NOT connecting it through Composio or a connector. Optional; the built-in local database works without it."
+    description: "Attio API key. Only if Attio is the one CRM you use and you are NOT connecting it through Composio or a connector. Any one CRM works, all are optional, and there is no default CRM. Without one, Becca uses a CSV or Google Sheet."
     required: false
     default: ""
   - name: HUBSPOT_ACCESS_TOKEN
@@ -74,3 +75,19 @@ env_requires:
     description: "Your scheduling link (Cal.com, Calendly, HubSpot Meetings). Becca drops this into emails so no calendar API is required."
     required: false
     default: ""
+  - name: BECCA_APPROVAL_EMAIL
+    description: "Optional pre-fill. The address where Becca emails your daily campaign for approval. Onboarding confirms it with you, and brain/config.md overrides it."
+    required: false
+    default: ""
+  - name: BECCA_CAMPAIGN_SIZE
+    description: "Optional pre-fill. Contacts in each daily campaign (default 50). Onboarding confirms it with you, and brain/config.md overrides it."
+    required: false
+    default: "50"
+  - name: BECCA_CRM
+    description: "Optional pre-fill. Which CRM you use (for example attio, hubspot, gohighlevel, pipedrive, salesforce), or blank for none. Onboarding confirms it with you, and brain/config.md overrides it."
+    required: false
+    default: ""
+  - name: BECCA_CRM_FALLBACK
+    description: "Optional pre-fill. Where Interested replies go when there is no CRM: csv or google_sheet (default csv). Onboarding confirms it with you, and brain/config.md overrides it."
+    required: false
+    default: "csv"

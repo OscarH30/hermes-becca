@@ -1,17 +1,27 @@
 #!/usr/bin/env python3
 """Create Becca's local prospect database.
 
-Always run at onboarding, even when a CRM is connected. This database is the
-send log and dedupe index -- it answers "have we already emailed this person?"
-without a network call, which is what keeps Becca from emailing anyone twice.
+Always run at onboarding. This is Becca's internal store, whether or not a CRM,
+a CSV or a Google Sheet is connected. It holds the send log, the campaigns and
+their approvals, and the dedupe index. It answers "have we already emailed this
+person?" without a network call, which is what keeps Becca from emailing anyone
+twice.
 
-Safe to re-run: every statement is CREATE ... IF NOT EXISTS.
+Safe to re-run: every statement is CREATE ... IF NOT EXISTS, and the migration
+only adds columns that are missing. An existing prospects.db from an earlier
+version is upgraded in place.
+
+Usage:
+    python3 scripts/init_db.py              create or upgrade prospects.db
+    python3 scripts/init_db.py --db PATH    use a different database file
+    python3 scripts/init_db.py --help       show this help (creates nothing)
 """
+import argparse
 import sqlite3
 import sys
 from pathlib import Path
 
-DB = Path(__file__).resolve().parent.parent / "prospects.db"
+DEFAULT_DB = Path(__file__).resolve().parent.parent / "prospects.db"
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS prospects (
@@ -54,7 +64,7 @@ CREATE TABLE IF NOT EXISTS replies (
     id            INTEGER PRIMARY KEY AUTOINCREMENT,
     prospect_id   INTEGER NOT NULL REFERENCES prospects(id) ON DELETE CASCADE,
     received_at   TEXT NOT NULL DEFAULT (datetime('now')),
-    classification TEXT,   -- interested | objection | referral | not_now | hard_no | auto_reply | bounce
+    classification TEXT,   -- interested | question | not_now | referral | no | stop | auto_reply | bounce
     body          TEXT,
     handled       INTEGER NOT NULL DEFAULT 0
 );
@@ -76,6 +86,47 @@ CREATE TABLE IF NOT EXISTS status_history (
     reason       TEXT
 );
 
+-- One row per daily campaign. status: drafting | awaiting_approval | revising |
+-- approved | launched | held | completed | cancelled
+CREATE TABLE IF NOT EXISTS campaigns (
+    id                        TEXT PRIMARY KEY,     -- e.g. C20261121-1
+    name                      TEXT,
+    version                   INTEGER NOT NULL DEFAULT 1,
+    status                    TEXT NOT NULL DEFAULT 'drafting',
+    segment_note              TEXT,                 -- who this campaign targets and how they were found
+    contact_count             INTEGER NOT NULL DEFAULT 0,
+    approval_email            TEXT,                 -- the owner's address the approval went to
+    approval_channel          TEXT,                 -- gmail | outlook | agentmail | platform_email | chat
+    approval_sent_at          TEXT,
+    approval_message_id       TEXT,
+    approval_reply_message_id TEXT,
+    approved_by               TEXT,                 -- verified sender address of the approval reply
+    approved_at               TEXT,
+    approved_version          INTEGER,              -- the version the owner approved; load only this one
+    reminder_sent_at          TEXT,
+    instantly_campaign_id     TEXT,
+    launched_at               TEXT,
+    created_at                TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at                TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- The contacts in a campaign and the exact words shown to the owner for approval.
+CREATE TABLE IF NOT EXISTS campaign_contacts (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    campaign_id  TEXT NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
+    prospect_id  INTEGER NOT NULL REFERENCES prospects(id) ON DELETE CASCADE,
+    state        TEXT NOT NULL DEFAULT 'included',  -- included | held_back | removed | loaded
+    held_reason  TEXT,
+    fact         TEXT,
+    fact_source  TEXT,
+    subject_1    TEXT,
+    body_1       TEXT,
+    body_2       TEXT,
+    body_3       TEXT,
+    word_count   INTEGER,
+    UNIQUE (campaign_id, prospect_id)
+);
+
 CREATE INDEX IF NOT EXISTS idx_prospects_status  ON prospects(status);
 CREATE INDEX IF NOT EXISTS idx_prospects_email   ON prospects(email);
 CREATE INDEX IF NOT EXISTS idx_prospects_domain  ON prospects(domain);
@@ -83,6 +134,9 @@ CREATE INDEX IF NOT EXISTS idx_prospects_next    ON prospects(next_action_at);
 CREATE INDEX IF NOT EXISTS idx_sends_prospect    ON sends(prospect_id);
 CREATE INDEX IF NOT EXISTS idx_suppression_email ON suppression(email);
 CREATE INDEX IF NOT EXISTS idx_suppression_domain ON suppression(domain);
+CREATE INDEX IF NOT EXISTS idx_campaigns_status  ON campaigns(status);
+CREATE INDEX IF NOT EXISTS idx_cc_campaign       ON campaign_contacts(campaign_id);
+CREATE INDEX IF NOT EXISTS idx_cc_prospect       ON campaign_contacts(prospect_id);
 
 -- Keep updated_at honest without the agent having to remember.
 CREATE TRIGGER IF NOT EXISTS trg_prospects_touch
@@ -103,10 +157,53 @@ END;
 """
 
 
-def main() -> int:
-    conn = sqlite3.connect(DB)
+# Columns added after v1.4.0. Each is added only if it is missing, so this is
+# safe on a new database and on an old one.
+MIGRATIONS = [
+    ("sends", "campaign_id", "TEXT"),
+    ("replies", "campaign_id", "TEXT"),
+    ("replies", "pushed_to_crm", "INTEGER DEFAULT 0"),
+    ("replies", "crm_record_id", "TEXT"),
+    ("prospects", "signal_source", "TEXT"),
+]
+
+# Indexes on migrated columns must be created after the migration.
+POST_MIGRATION = """
+CREATE INDEX IF NOT EXISTS idx_sends_campaign ON sends(campaign_id);
+CREATE INDEX IF NOT EXISTS idx_replies_campaign ON replies(campaign_id);
+"""
+
+
+def migrate(conn: sqlite3.Connection) -> list:
+    added = []
+    for table, column, decl in MIGRATIONS:
+        existing = {row[1] for row in conn.execute(f"PRAGMA table_info({table})")}
+        if column not in existing:
+            conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {decl}")
+            added.append(f"{table}.{column}")
+    conn.executescript(POST_MIGRATION)
+    return added
+
+
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Create or upgrade Becca's local prospect database. "
+        "It is the internal store and send log, whether or not a CRM or CSV is connected. "
+        "Safe to re-run."
+    )
+    parser.add_argument(
+        "--db",
+        type=Path,
+        default=DEFAULT_DB,
+        help=f"database file to create or upgrade (default: {DEFAULT_DB})",
+    )
+    args = parser.parse_args(argv)
+    db = args.db
+
+    conn = sqlite3.connect(db)
     try:
         conn.executescript(SCHEMA)
+        added = migrate(conn)
         conn.commit()
         tables = [
             r[0]
@@ -116,8 +213,10 @@ def main() -> int:
         ]
     finally:
         conn.close()
-    print(f"Becca's prospect database ready: {DB}")
+    print(f"Becca's prospect database ready: {db}")
     print(f"Tables: {', '.join(tables)}")
+    if added:
+        print(f"Columns added: {', '.join(added)}")
     return 0
 
 

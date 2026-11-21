@@ -18,3 +18,20 @@ model:
 agent:
   max_turns: 500
   reasoning_effort: medium
+
+# ---------------------------------------------------------------------
+# Becca defaults
+#
+# These are the shipped defaults. The owner's real values live in
+# brain/config.md (written at onboarding) and win over anything here.
+# Leave approval_email blank: onboarding asks for it and records it.
+# ---------------------------------------------------------------------
+becca:
+  approval_email: ""          # where the daily campaign is sent for approval
+  approval_channel: ""        # gmail | outlook | agentmail | platform_email | chat
+  campaign_size: 50           # contacts in each daily campaign
+  first_campaign_size: 10     # the first campaign after onboarding is smaller
+  approval_reminder_days: 3   # one reminder after this many days, then the campaign is held
+  crm: none                   # none | any CRM the owner connected (Attio, HubSpot, GoHighLevel, Pipedrive, Salesforce, ...)
+  crm_fallback: csv           # csv | google_sheet: where Interested replies go if no CRM
+  crm_fallback_location: ""   # file path or sheet name
