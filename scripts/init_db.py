@@ -106,18 +106,19 @@ CREATE TABLE IF NOT EXISTS campaigns (
     approved_at               TEXT,
     approved_version          INTEGER,              -- the version the owner approved; load only this one
     reminder_sent_at          TEXT,                 -- reset to NULL on every new version
-    last_handled_message_id   TEXT,                 -- newest approval-thread message already handled; never replay an older one
+    reminder_message_id       TEXT,                 -- RFC Message-ID of the reminder Becca sent; reset on every new version; never counts as an approval
+    last_handled_message_id   TEXT,                 -- high-water mark by received time: newest approval-thread message already handled; skip anything at or before it
     last_checked_at           TEXT,                 -- when the approval inbox was last read for this campaign
     load_error                TEXT,                 -- why the last load failed, with the date; tell the owner once, do not retry hourly
     instantly_campaign_id     TEXT,
-    launched_at               TEXT,
+    launched_at               TEXT,                 -- empty means never launched; only then may crash recovery cancel it
     created_at                TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at                TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
 -- The contacts in a campaign and the exact words shown to the owner for approval.
 -- version is the campaign version the words were last shown in. approved_hash is
--- a hash of the words shown (email, subject_1, body_1, body_2, body_3), set when
+-- a hash of the words shown (email, subject_1..3, body_1..3), set when
 -- the approval email is sent. At load time only rows with state included, version
 -- equal to campaigns.approved_version, and a matching approved_hash are loaded.
 CREATE TABLE IF NOT EXISTS campaign_contacts (
@@ -130,7 +131,9 @@ CREATE TABLE IF NOT EXISTS campaign_contacts (
     fact_source  TEXT,
     subject_1    TEXT,
     body_1       TEXT,
+    subject_2    TEXT,
     body_2       TEXT,
+    subject_3    TEXT,
     body_3       TEXT,
     word_count   INTEGER,
     version      INTEGER,
@@ -178,7 +181,8 @@ END;
 
 
 # Columns added after v1.4.0, plus columns added to the new tables during 1.5.0
-# development. Each is added only if it is missing, so this is safe on a new
+# development (campaigns.reminder_message_id, campaign_contacts.subject_2 and
+# subject_3 among them). Each is added only if it is missing, so this is safe on a new
 # database and on an old one.
 MIGRATIONS = [
     ("sends", "campaign_id", "TEXT"),
@@ -192,8 +196,11 @@ MIGRATIONS = [
     ("campaigns", "last_handled_message_id", "TEXT"),
     ("campaigns", "last_checked_at", "TEXT"),
     ("campaigns", "load_error", "TEXT"),
+    ("campaigns", "reminder_message_id", "TEXT"),
     ("campaign_contacts", "version", "INTEGER"),
     ("campaign_contacts", "approved_hash", "TEXT"),
+    ("campaign_contacts", "subject_2", "TEXT"),
+    ("campaign_contacts", "subject_3", "TEXT"),
 ]
 
 # Indexes on migrated columns must be created after the migration.

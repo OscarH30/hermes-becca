@@ -102,7 +102,8 @@ connected. A complete backend, not a placeholder: it holds prospects, sends,
 replies, campaigns, campaign contacts, and status history.
 
 **4. `tracker_table`**: for platforms with no filesystem (a chat-only project, for
-example). A simple table kept in your brain notes, one row per prospect, with
+example). `tracker_location` in `brain/config.md` says where it lives. A simple
+table kept in your brain notes, one row per prospect, with
 these columns: company, contact name, title, email, source and date of the one
 true fact, status (from the vocabulary below), campaign id and version, step sent,
 date of each touch, next touch date, reply bucket, notes. Update it after every
@@ -110,8 +111,9 @@ send and every reply, and show the owner the current table when asked so they ca
 copy it into a spreadsheet. It does the same job as the local database and must be
 checked the same way before every send. Keep a second small table of campaigns
 (id, name, current version, approved version, status, approval email message id and
-sent time, approval reply message id and time, approver, last handled message id,
-contacts). Mark each prospect row with the version and the approved hash.
+sent time, reminder message id and time, approval reply message id and time,
+approver, last handled message id, contacts). Mark each prospect row with the
+version and the approved hash.
 
 ## The lead-handoff record
 
@@ -142,9 +144,10 @@ The campaign version fields live in the local record, not in the CRM. Each
 prospect that enters a campaign carries: the campaign id, the campaign version it
 was included in, and the approved hash of its words (the approval covers exactly
 those words). The campaign itself carries its name, status, current version and
-approved version, the approval email message id and sent time, the approval reply
-message id and time, the approver address, the last handled message id and last
-checked time, and the Instantly campaign id. Write them to the local record. Put
+approved version, the approval email message id and sent time, the reminder message id and time, the
+approval reply message id and time, the approver address, the last handled message
+id and last checked time, and the Instantly campaign id. The approved hash covers
+the email, subject_1 to subject_3, and body_1 to body_3. Write them to the local record. Put
 only the campaign name and id on the CRM record or note when a lead is handed
 off.
 
@@ -161,7 +164,7 @@ Use exactly these. A status outside this list breaks the reporting.
 | `contacted` | Step 1 sent |
 | `follow_up_1` / `follow_up_2` | Later sequence steps sent |
 | `replied` | Any human reply. **Sequence stops immediately.** For a "Not now" reply, also record the follow-up date in the note |
-| `meeting_booked` | Call on the calendar |
+| `meeting_booked` | Call on the calendar. The status is kept locally. The CRM gets only a note on the existing handoff record, never a stage change or a new record from Becca |
 | `not_interested` | Explicit no. Never contact again |
 | `unsubscribed` | Opt-out. Added to suppression, never contact again |
 | `bounced` | Hard bounce. Never retry |
@@ -174,25 +177,38 @@ A contact chosen for a campaign that is still waiting for approval stays at `new
 in this vocabulary. It is held in that campaign (see below) and is not eligible
 for another one. It becomes `queued` only when its campaign is approved.
 
+A referral (someone a prospect pointed us to) is stored as a contact at `new` with
+the note "referral draft pending, not eligible" until the owner decides on the
+reply draft. Such a contact is never picked for a campaign. When the owner has
+said yes to the draft in a live chat and it is sent, the status becomes
+`contacted`, so no campaign can email them again.
+
 **Campaign status** (one per campaign)
 
 | Status | Means |
 |---|---|
 | `drafting` | Being built and written. Nothing shown yet |
 | `awaiting_approval` | The approval email was sent, waiting for the owner's reply |
-| `revising` | The owner asked for changes. Next version in progress |
+| `revising` | The owner asked for changes, or words or contacts changed after approval. Next version in progress. On a launched campaign the not-yet-sent leads stay paused and no contact status changes |
 | `approved` | A valid approval was received. Not yet loaded |
 | `loading` | A lock set right before the Instantly upload, so two jobs never load the same campaign twice |
 | `launched` | Loaded into Instantly (or sending started) |
 | `held` | Unapproved after `approval_reminder_days`, reminder sent. No new campaign until the owner replies |
 | `completed` | Every touch went out or was cancelled |
-| `cancelled` | Abandoned. Its contacts go back to the pool |
+| `cancelled` | Abandoned. Only contacts that were never launched (never loaded) go back to the pool. A campaign with `launched_at` set is never cancelled by crash recovery |
 
 A campaign is `approved` only through the approval gate in `outreach-campaign`.
 Nothing else may set it: not a CRM stage change, not a note, not a prospect's
 reply.
 
 ## Before every send
+
+This section is about campaign emails. Every campaign email needs an approved
+campaign. Replies to prospects, booking links, and a referral's first email are
+reply drafts (see `inbox-triage`): they are not part of a campaign, they are not
+checked against campaign approval, and they are sent only after the owner's yes
+for that draft in a live chat. The suppression check below still applies to them:
+nobody on the suppression list gets a reply.
 
 Query the local record (database or tracker table) for the email address and
 confirm all of:
