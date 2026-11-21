@@ -87,7 +87,9 @@ CREATE TABLE IF NOT EXISTS status_history (
 );
 
 -- One row per daily campaign. status: drafting | awaiting_approval | revising |
--- approved | launched | held | completed | cancelled
+-- approved | loading | launched | held | completed | cancelled
+-- (loading is a lock set right before the Instantly upload so two jobs never
+-- load the same campaign twice)
 CREATE TABLE IF NOT EXISTS campaigns (
     id                        TEXT PRIMARY KEY,     -- e.g. C20261121-1
     name                      TEXT,
@@ -103,7 +105,10 @@ CREATE TABLE IF NOT EXISTS campaigns (
     approved_by               TEXT,                 -- verified sender address of the approval reply
     approved_at               TEXT,
     approved_version          INTEGER,              -- the version the owner approved; load only this one
-    reminder_sent_at          TEXT,
+    reminder_sent_at          TEXT,                 -- reset to NULL on every new version
+    last_handled_message_id   TEXT,                 -- newest approval-thread message already handled; never replay an older one
+    last_checked_at           TEXT,                 -- when the approval inbox was last read for this campaign
+    load_error                TEXT,                 -- why the last load failed, with the date; tell the owner once, do not retry hourly
     instantly_campaign_id     TEXT,
     launched_at               TEXT,
     created_at                TEXT NOT NULL DEFAULT (datetime('now')),
@@ -111,6 +116,10 @@ CREATE TABLE IF NOT EXISTS campaigns (
 );
 
 -- The contacts in a campaign and the exact words shown to the owner for approval.
+-- version is the campaign version the words were last shown in. approved_hash is
+-- a hash of the words shown (email, subject_1, body_1, body_2, body_3), set when
+-- the approval email is sent. At load time only rows with state included, version
+-- equal to campaigns.approved_version, and a matching approved_hash are loaded.
 CREATE TABLE IF NOT EXISTS campaign_contacts (
     id           INTEGER PRIMARY KEY AUTOINCREMENT,
     campaign_id  TEXT NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
@@ -124,6 +133,8 @@ CREATE TABLE IF NOT EXISTS campaign_contacts (
     body_2       TEXT,
     body_3       TEXT,
     word_count   INTEGER,
+    version      INTEGER,
+    approved_hash TEXT,
     UNIQUE (campaign_id, prospect_id)
 );
 
@@ -146,6 +157,15 @@ BEGIN
     UPDATE prospects SET updated_at = datetime('now') WHERE id = NEW.id;
 END;
 
+-- Keep campaigns.updated_at honest (used to spot a campaign left in drafting
+-- or revising by a crash).
+CREATE TRIGGER IF NOT EXISTS trg_campaigns_touch
+AFTER UPDATE ON campaigns
+FOR EACH ROW
+BEGIN
+    UPDATE campaigns SET updated_at = datetime('now') WHERE id = NEW.id;
+END;
+
 -- Record every status change so reporting can reconstruct the funnel.
 CREATE TRIGGER IF NOT EXISTS trg_status_history
 AFTER UPDATE OF status ON prospects
@@ -157,14 +177,23 @@ END;
 """
 
 
-# Columns added after v1.4.0. Each is added only if it is missing, so this is
-# safe on a new database and on an old one.
+# Columns added after v1.4.0, plus columns added to the new tables during 1.5.0
+# development. Each is added only if it is missing, so this is safe on a new
+# database and on an old one.
 MIGRATIONS = [
     ("sends", "campaign_id", "TEXT"),
     ("replies", "campaign_id", "TEXT"),
     ("replies", "pushed_to_crm", "INTEGER DEFAULT 0"),
     ("replies", "crm_record_id", "TEXT"),
     ("prospects", "signal_source", "TEXT"),
+    ("prospects", "researched_at", "TEXT"),      # when the fact was last checked; pool freshness
+    # Added during 1.5.0 development: only needed on a database created by an
+    # early 1.5.0 build. A fresh or 1.4.0 database already has them.
+    ("campaigns", "last_handled_message_id", "TEXT"),
+    ("campaigns", "last_checked_at", "TEXT"),
+    ("campaigns", "load_error", "TEXT"),
+    ("campaign_contacts", "version", "INTEGER"),
+    ("campaign_contacts", "approved_hash", "TEXT"),
 ]
 
 # Indexes on migrated columns must be created after the migration.
