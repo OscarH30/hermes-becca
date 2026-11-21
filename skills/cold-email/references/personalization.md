@@ -70,7 +70,7 @@ Tapping into what prospects are passionate about drives significantly higher res
 ## What Feels Fake (avoid)
 
 - AI-generated emails with similar phrasing ("I hope this email finds you well")
-- Generic attention hacks disconnected from problem ("Cool that you went to UCLA!" → pitch)
+- Generic attention hacks disconnected from problem ("Cool that you went to UCLA!", then a pitch)
 - Over-personalizing to creepiness
 - "I saw your LinkedIn profile and wanted to reach out", signals mass automation
 

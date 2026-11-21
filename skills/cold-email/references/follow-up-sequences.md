@@ -66,7 +66,7 @@ Also avoid guilt ("I'm surprised I haven't heard back"), fake urgency, and repea
 
 ## Same rules on every touch
 
-Plain text. No links, images, or attachments. Owner's signature, real business address, and an opt-out line ("If this is not relevant, reply 'stop' and I won't email you again"). No invented facts. Approve all three touches for a prospect together, before the first goes out.
+Plain text. No links, images, or attachments. Owner's signature, real business address, and an opt-out line ("If this is not relevant, reply 'stop' and I won't email you again"). No invented facts. The campaign approval covers all three touches of every contact together, and nothing goes out before that approval.
 
 ## CTA adjustment by seniority
 

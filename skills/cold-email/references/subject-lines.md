@@ -25,7 +25,7 @@ All-lowercase has highest open rates (Gong, 85M+ emails). Lowercase looks more p
 
 Personalized subject lines boost opens **26 to 50%**, but type matters:
 
-- **First name in subject line → 12% fewer replies.** Signals automation.
+- **First name in subject line: 12% fewer replies.** Signals automation.
 - **Contextual personalization works:** pain points, competitors, trigger events, industry challenges.
 - Use {{painPoint}}, {{competitor}}, {{commonGround}}, not {{firstName}}.
 

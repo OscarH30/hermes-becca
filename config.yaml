@@ -18,3 +18,22 @@ model:
 agent:
   max_turns: 500
   reasoning_effort: medium
+
+# ---------------------------------------------------------------------
+# Becca defaults
+#
+# These are defaults and documentation only. The skills read brain/config.md,
+# not this file. The owner's real values live in brain/config.md (written at
+# onboarding) and win over anything here. Leave approval_email blank:
+# onboarding asks the owner for it in a live chat and records it. A value here
+# or in .env never counts as the approval address.
+# ---------------------------------------------------------------------
+becca:
+  approval_email: ""          # where the daily campaign is sent for approval
+  approval_channel: ""        # gmail | outlook | agentmail | platform_email | chat
+  campaign_size: 50           # ceiling on contacts per daily campaign; onboarding sizes it to sending capacity
+  first_campaign_size: 10     # the first campaign after onboarding is smaller
+  approval_reminder_days: 3   # one reminder after this many days, then the campaign is held
+  crm: none                   # none | any CRM the owner connected (Attio, HubSpot, GoHighLevel, Pipedrive, Salesforce, ...)
+  crm_fallback: csv           # csv | google_sheet: where Interested replies go if no CRM
+  crm_fallback_location: ""   # file path or sheet name
