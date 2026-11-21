@@ -21,11 +21,11 @@ These are fixed. Where a reference file or a framework disagrees, these win.
 4. **Subject: lowercase, 2 to 3 words**, like a note from a person (for example `second dispatcher`). No "Re:" or "Fwd:".
 5. **Plain text.** No links, images, or attachments in the first email.
 6. **One small ask**, easy to answer in a few words ("Worth a quick look?"). Never ask for 30 minutes in a first email.
-7. **No invented facts.** If you cannot find a true fact, write "no hook found" and use a short, honest, plain version. Never make one up. No results, numbers, or customer stories that are not in `brain/business.md`.
+7. **No invented facts.** If you cannot find a true fact, do not write that contact. Return them to `prospecting` (skip them) and tell the owner. Never make one up, and never write a plain version with no fact. No results, numbers, or customer stories that are not in `brain/business.md`.
 8. **Three touches, then stop.** Day 1, day 3, day 7 (see below).
 9. **Every email carries** the owner's signature, a real business address, and an easy opt-out line.
 10. **Written as the owner**, never as Becca or an assistant. See SOUL.md.
-11. **Nothing is sent without the owner's yes.** The owner approves the whole campaign by email, and that approval covers all three touches of every contact in it. There is no per-email approval.
+11. **Nothing is sent without the owner's approval of that campaign.** The owner approves the whole campaign by replying to the approval email from their approval address, and that approval covers all three touches of every contact in it, exactly as shown. There is no per-email approval. Change a word after approval and it needs a new approval.
 
 ## Before Writing
 
@@ -37,7 +37,7 @@ Understand the situation (ask if not provided):
 2. **What do you want?** The outcome (a reply, an intro, a short call)
 3. **What's the value?** The specific problem you solve for people like them
 4. **What's your proof?** A real result or credibility signal from `brain/business.md`
-5. **Any research signals?** Hiring, news, reviews, a new location, a post, a tech change, with the source for each
+5. **Any research signals?** Hiring, news, reviews, a new location, a post, a tech change, with the source for each. A contact with none is not written. They go back to `prospecting`
 
 Work with whatever the user gives you. If they have one true, sourced signal and a clear offer, that's enough to write. Don't block on missing inputs. Use what you have and note what would make it stronger.
 
@@ -156,7 +156,7 @@ Give 1 point for yes, 0 for no. **Pass is 8 out of 10, and a 0 on question 1 or 
 | 9 | The subject is lowercase and 2 to 3 words. |
 | 10 | The owner would send it with their own name on it. |
 
-Score each draft before showing it to the owner, and show the score. Do not trust your own word count when it is close to 90, count the words again. Rewrite any email that fails. Show the final version in the approval email with its fact, its source, and its word count. The owner's approval of the campaign is still required before anything is sent.
+Score each draft before showing it to the owner, and show the score. Do not trust your own word count when it is close to 90, count the words again. Rewrite any email that fails. Show the final version in the approval email with its fact, its source, and its word count. The owner's approval of the campaign is still required before anything is sent, and an email changed after approval needs a fresh approval.
 
 ---
 

@@ -11,7 +11,7 @@ the right people, writes cold email that sounds like a person, works the inbox,
 hands interested leads to your CRM, and books calls.
 
 **Every email goes out in your name, not hers.** She writes as you, the owner or
-CEO, and signs with your signature. Each weekday she builds one campaign of about
+CEO, and signs with your signature. Each weekday she builds one campaign of up to
 50 contacts and emails it to you. **You approve that campaign by replying, then
 she sends it** (or you send by hand). Nothing is loaded or sent without your
 approval of that specific campaign. That is the rule and she does not drift out
@@ -31,15 +31,21 @@ of it.
 3. **Write.** She writes a custom first email per contact (under 90 words, one
    small ask) plus a day 3 and a day 7 follow-up, in your voice. Three touches,
    then stop.
-4. **Daily campaign approval by email.** She builds one new campaign of about 50
+4. **Daily campaign approval by email.** She builds one new campaign of up to 50
    contacts and emails you one approval email: who they are, every contact with
-   its custom first email, and the plan. You reply **APPROVE**, or reply with
-   changes and she revises and resends. Only then does it load into Instantly and
-   send, within the daily cap.
+   its custom first email, and the plan. You reply **APPROVE** (from your approval
+   address, to that email), or reply with changes and she revises and resends.
+   Only then does it load into Instantly and send, within the daily cap.
 5. **Replies to your CRM.** Replies come back in Instantly and are sorted into
    seven buckets. Interested leads go to your CRM (or a Google Sheet or CSV if
    you have none) and are listed in the daily summary. Your team takes it from
-   there.
+   there. The CRM gets only your hot leads. Every prospect and every send stays in
+   her own database, so nothing in your CRM can be emailed by accident.
+
+How big is a campaign? Up to 50 is the ceiling. Each contact gets three emails,
+so the real number is about (sending inboxes x daily cap per inbox) / 3 new
+contacts a day. Onboarding works it out with you, and each approval email says
+what the campaign was sized to.
 
 ---
 
@@ -58,6 +64,10 @@ Pick the one that matches your agent.
    company brain, then your CRM and the email address where your daily campaign
    goes. It walks you through connecting each tool below, one at a time, using
    the connection options in your bot's own settings.
+
+A bot that cannot check email on its own has no schedule. After you reply to
+the approval email, tell it **"check my approval"** and it looks for your reply
+then.
 
 Menu names in Grok Bot change over time. If the agent points you at a settings
 page, look for the closest match to what it describes. If your bot has no
@@ -104,8 +114,8 @@ For agents that cannot open links or connect tools:
    file is how she remembers your business.
 
 In this mode there is no email channel and no scheduled run. Becca shows you the
-campaign in chat, you approve it in chat by naming the campaign id, and you
-paste and send by hand. Everything else, the research, the voice, the
+full campaign in chat, you approve it by typing a message of your own that names
+the campaign id (pasted text never counts), and you paste and send by hand. Everything else, the research, the voice, the
 three-touch sequence and the reply sorting, works the same.
 
 ---
@@ -155,7 +165,7 @@ secrets or connector settings). Never in the chat.
 | A reply playbook | sorts every reply into seven buckets: Interested, Question, Not now, Referral, No, Stop, Auto-reply | `inbox-triage` |
 | A checklist for protecting your main email address | lookalike domains, SPF, DKIM, DMARC, warmup, daily caps | `outreach-campaign`, `onboarding` |
 | Research tools for real facts and real emails | treg.to and Apollo lookups, with the price checked first | `prospecting` |
-| Interested leads in your CRM | name, company, email, campaign, the reply and a suggested next step pushed to your CRM (or a CSV or Google Sheet), plus the local database as the send log | `crm-sync` |
+| Interested leads in your CRM | name, company, email, campaign, the reply and a suggested next step pushed to your CRM (or a CSV or Google Sheet). Only hot leads go there. The local database stays the record of every prospect and send | `crm-sync` |
 | Calls on the calendar | your booking link on interested replies | `booking` |
 
 ---
@@ -225,8 +235,8 @@ hermes -p becca cron tick      # activate the schedule
 | When | What |
 |---|---|
 | Weekdays 8:00 | Daily prospecting: finds and researches contacts that match your ideal buyer profile and your offer |
-| Weekdays 9:00 | Daily campaign for approval: builds one campaign of about 50 contacts, writes every email, **emails it to you for approval** |
-| Every hour | Campaign approval check: looks for your approval reply. Loads and sends only a campaign you approved, from your approval address |
+| Weekdays 9:00 | Daily campaign for approval: builds one campaign of up to 50 contacts, writes every email, **emails it to you for approval** |
+| Weekdays, hourly | Campaign approval check: looks for your approval reply and only reports when something changed. Loads and sends only a campaign you approved, from your approval address |
 | Every 2 hours | Inbox sweep: opt-outs first, stops sequences on reply, drafts responses, sends interested leads to your CRM |
 
 She builds a new campaign only when none is waiting for your approval. If you
@@ -243,6 +253,10 @@ hermes profile update becca
 Your `brain/`, memories, sessions, `.env`, prospect database and the tools you
 connected are never touched. Updates change how she works, never what she can
 reach.
+
+Coming from 1.4.0? After the update, tell Becca **"upgrade my database"**. She
+runs `scripts/init_db.py` (safe to re-run, it keeps your data) and asks the
+approval questions again: your approval email, your CRM and your campaign size.
 
 ---
 
@@ -282,7 +296,7 @@ files or saved notes. They are plain Markdown. Edit them any time.
 ## Version
 
 **1.5.0** starts onboarding from your company brain, adds a daily campaign of
-about 50 contacts that is emailed to you and sent only after you reply APPROVE
+up to 50 contacts that is emailed to you and sent only after you reply APPROVE
 for that campaign, and pushes interested leads to whatever CRM you use (or a CSV
 or Google Sheet).
 
