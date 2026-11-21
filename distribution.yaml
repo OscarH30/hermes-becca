@@ -1,12 +1,13 @@
 name: becca
-version: 1.3.0
-description: "Cold outreach SDR — finds prospects in Apollo, writes human-sounding cold email, keeps your CRM current, works the inbox, and books calls. Approve-first by default."
+# 1.4.0: set up from one line on any agent (Grok Bot, Hermes, Claude or ChatGPT projects); onboarding interviews on the last ten customers, then connects Apollo, treg.to, Instantly, Attio and Cal.com one at a time; adds treg.to to prospecting.
+version: 1.4.0
+description: "Cold outreach SDR. Finds prospects with Apollo and treg.to, writes human-sounding cold email, keeps your CRM current, works the inbox, and books calls. Approve-first by default."
 hermes_requires: ">=0.20.0"
 author: "Vindex Consulting"
 license: "MIT"
 
-# What the distribution owns. Everything else in the profile — brain/, memories,
-# sessions, .env, auth.json, databases — belongs to the installer and is never
+# What the distribution owns. Everything else in the profile: brain/, memories,
+# sessions, .env, auth.json, databases: belongs to the installer and is never
 # touched by `hermes profile update`.
 #
 # Note what is deliberately ABSENT from this list: mcp.json and the mcp_servers
@@ -20,6 +21,7 @@ distribution_owned:
   - cron/
   - scripts/
   - README.md
+  - AGENT-SETUP.md
   - .env.template
   - distribution.yaml
 
@@ -27,32 +29,41 @@ distribution_owned:
 # NOTHING HERE IS REQUIRED TO INSTALL OR START.
 #
 # Becca arrives with no tool access at all. Her onboarding skill connects what
-# she needs and wires it to this profile — Composio (recommended), your own API
-# keys, or an MCP server you already run. These variables only apply if you pick
-# the direct-key route, and onboarding will tell you which ones it needs.
+# she needs and wires it to this profile: Composio (recommended), the tool's own
+# sign-in, or an MCP server you already run. These variables only apply if you
+# pick the direct-key route, and onboarding will tell you which ones it needs.
+# Never paste a key into the chat. Keys go in this profile's .env.
 env_requires:
   - name: COMPOSIO_API_KEY
-    description: "Composio API key — the recommended path for Apollo, Gmail, HubSpot, and calendar. Get one free at composio.dev. Onboarding walks you through it."
+    description: "Composio API key. The recommended path for Apollo, Instantly, Attio, Gmail, and calendar. Get one free at composio.dev. Onboarding walks you through it."
     required: false
     default: ""
   - name: APOLLO_API_KEY
-    description: "Apollo.io API key — only if you are NOT using Composio for Apollo. Requires an Apollo plan that includes API access."
+    description: "Apollo.io API key: only if you are NOT using Composio for Apollo. Requires an Apollo plan that includes API access."
+    required: false
+    default: ""
+  - name: TREG_API_KEY
+    description: "treg.to key. Only if your platform needs a key; prefer the platform's secure connector. The usual setup is to give your agent 'set up treg - https://treg.to/llms.txt' and approve the connection in treg.to. Pay-per-call research tools (verify emails, enrich companies, local business data), price shown before each call."
     required: false
     default: ""
   - name: INSTANTLY_API_KEY
-    description: "Instantly API key — the recommended sending path. Becca loads approved emails into your campaign and Instantly sends them in your name from your warmed lookalike domains. Only needed if you are NOT connecting Instantly through Composio."
+    description: "Instantly API key: the recommended sending path. Becca loads approved emails into your campaign and Instantly sends them in your name from your warmed lookalike domains. Only needed if you are NOT connecting Instantly through Composio."
     required: false
     default: ""
   - name: AGENTMAIL_API_KEY
-    description: "AgentMail API key — an alternative sending inbox, if you are not using Instantly or Gmail/Outlook."
+    description: "AgentMail API key: an alternative sending inbox, if you are not using Instantly or Gmail/Outlook."
+    required: false
+    default: ""
+  - name: ATTIO_API_KEY
+    description: "Attio API key. Only if you use Attio as your CRM and are NOT connecting it through Composio or a connector. Optional; the built-in local database works without it."
     required: false
     default: ""
   - name: HUBSPOT_ACCESS_TOKEN
-    description: "HubSpot private-app token — only if you are NOT using Composio for HubSpot."
+    description: "HubSpot private-app token: only if you are NOT using Composio for HubSpot."
     required: false
     default: ""
   - name: GHL_API_KEY
-    description: "GoHighLevel API key — only if you are NOT using Composio for GoHighLevel."
+    description: "GoHighLevel API key: only if you are NOT using Composio for GoHighLevel."
     required: false
     default: ""
   - name: GHL_LOCATION_ID
@@ -60,6 +71,6 @@ env_requires:
     required: false
     default: ""
   - name: BECCA_BOOKING_LINK
-    description: "Your scheduling link (Calendly, Cal.com, HubSpot Meetings). Becca drops this into emails so no calendar API is required."
+    description: "Your scheduling link (Cal.com, Calendly, HubSpot Meetings). Becca drops this into emails so no calendar API is required."
     required: false
     default: ""
