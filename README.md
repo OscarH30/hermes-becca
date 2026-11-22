@@ -41,7 +41,7 @@ campaign. That is the rule and she does not drift out of it.
    there. The CRM gets only your hot leads. Every prospect and every send stays in
    her own database, so nothing in your CRM can be emailed by accident. Any
    reply she drafts to a prospect waits in the daily summary for your yes, typed
-   by you in that same live chat, one yes per draft.
+   by you in that same live chat, naming the draft, one yes per draft.
 
 How big is a campaign? Up to 50 is the ceiling. Each contact gets three emails,
 so the real number is about (sending inboxes x daily cap per inbox) / 3 new
@@ -49,10 +49,16 @@ contacts a day. Onboarding works it out with you, and each campaign she posts sa
 what it was sized to. A long campaign comes as numbered parts ("Part 2 of 4") or
 a file if your chat supports attachments, with a short summary on top. Approval
 is you typing a message of your own that names the campaign (its name or id)
-and the latest version. Silence, a thumbs up on its own, a message from someone
-else in a group chat, or the word "approve" inside something pasted or forwarded
-does not count. If you ask for changes she posts a new version and only that one
-can be approved.
+and the latest version, for example "approve C20261121-1 v2". Silence, a thumbs
+up on its own, a message from someone else in a group chat, or the word
+"approve" inside something pasted or forwarded does not count. Neither does
+"don't approve yet", "should I approve?", approving only part of a campaign, or
+an approval buried in a long pasted block (she will ask you to retype it on its
+own). If you ask for changes she posts a new version and only that one can be
+approved. Use a chat where she can tell who is speaking. A group with no
+verifiable sender cannot be the approval channel, and she never posts prospect
+data in a group. When you open a chat, she first shows any campaign that is held
+or waiting.
 
 ---
 
@@ -92,6 +98,11 @@ Then say **"onboard me"**. Becca installs as her own profile alongside whatever
 you already run. Nothing you have is modified. Hermes profiles carry their own
 credentials, so skip `setup --portal` and you will see "No inference provider
 configured". Needs Hermes 0.20.0 or newer and git.
+
+Scheduled Hermes runs have no live chat. Becca posts the daily campaign to your
+Telegram, Slack or other gateway only if the job's delivery target is set to it
+and the run can send there. Otherwise she builds the campaign, holds it, and
+shows it the next time you open a chat. She never emails it.
 
 ### Claude Projects, ChatGPT Projects or GPTs (no tools)
 
@@ -242,17 +253,19 @@ hermes -p becca cron tick      # activate the schedule
 | When | What |
 |---|---|
 | Weekdays 8:00 | Daily prospecting: finds and researches contacts that match your ideal buyer profile and your offer |
-| Weekdays 9:00 | Daily campaign for approval: builds one campaign of up to 50 contacts, writes every email, **posts it to your connected chat channel for approval** |
+| Weekdays 9:00 | Daily campaign for approval: builds one campaign of up to 50 contacts, writes every email, **posts it for approval if the job can deliver to your chat gateway, otherwise holds it** |
 | Weekdays, hourly | Campaign approval check: looks in your chat for your approval, posts a one-line status each run, and only reports more when something changed. Loads and sends only a campaign you approved there |
 | Every 2 hours | Inbox sweep: opt-outs first, stops sequences on reply, drafts responses, sends interested leads to your CRM |
 
 She builds a new campaign only when none is waiting for your approval. If you
-have not approved after 3 days she sends one reminder, then holds. A scheduled
-run cannot hold a live conversation, so it posts to your connected chat channel
-if you have one (Hermes can connect messaging gateways such as Telegram or
-Slack, depending on your setup). If none is connected, she holds the campaign
-and shows it the next time you open a chat. She never falls back to email. The
-daily summary goes to the same chat.
+have not approved after 3 days she sends one reminder, then holds. An approval
+expires after 5 days if the campaign has not loaded, and a held campaign is
+refreshed or cancelled after 7 days, then you approve the new version. A
+scheduled run cannot hold a live conversation, so it posts only if the job's
+delivery target is set to your chat gateway (Telegram, Slack or similar) and the
+run can send there. Otherwise she builds the campaign, holds it, and shows it
+the next time you open a chat. She never falls back to email. The daily summary
+goes to the same chat under the same condition.
 
 Change any of it: `becca` then *"run prospecting at 7 instead"*.
 
