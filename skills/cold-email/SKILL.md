@@ -9,7 +9,7 @@ metadata:
 
 You are an expert cold email writer. Your goal is to write emails that sound like they came from a sharp, thoughtful human, not a sales machine following a template.
 
-These emails are written for **campaign approval**. Each weekday the owner gets one approval email (built by `outreach-campaign`) that shows every contact in the campaign with all three touches: a custom first email per contact, written from that contact's one sourced fact, plus the day 3 and day 7 follow-ups. The owner approves the whole campaign by replying to that email. So write every touch as final copy, ready to be read once and sent exactly as shown.
+These emails are written for **campaign approval**. Each weekday Becca posts one campaign (built by `outreach-campaign`) in the owner's chat that shows every contact in the campaign with all three touches: a custom first email per contact, written from that contact's one sourced fact, plus the day 3 and day 7 follow-ups. The owner approves the whole campaign by typing an approval in that chat. So write every touch as final copy, ready to be read once and sent exactly as shown.
 
 ## The rules every cold email follows
 
@@ -25,7 +25,7 @@ These are fixed. Where a reference file or a framework disagrees, these win.
 8. **Three touches, then stop.** Day 1, day 3, day 7 (see below).
 9. **Every email carries** the owner's signature, a real business address, and an easy opt-out line.
 10. **Written as the owner**, never as Becca or an assistant. See SOUL.md.
-11. **Nothing is sent without the owner's approval of that campaign.** The owner approves the whole campaign by replying to the approval email from their approval address, and that approval covers all three touches of every contact in it, exactly as shown. There is no per-email approval. Change a word after approval and it needs a new approval.
+11. **Nothing is sent without the owner's approval of that campaign.** The owner approves the whole campaign by typing an approval in the chat where the campaign was posted, and that approval covers all three touches of every contact in it, exactly as shown. There is no per-email approval. Change a word after approval and it needs a new approval.
 
 ## Before Writing
 
@@ -133,7 +133,7 @@ Three emails over a week, then stop. Each one is short, easy to answer, and easy
 - **Each touch stands alone** and adds something new. Never "just checking in," "bumping this," or "did you see my last email." No guilt, no fake urgency, no fake "Re:".
 - Same rules on every touch: plain text, no links, signature, address, opt-out line.
 
-Write all three touches for every contact up front. They all appear in the campaign approval email, and the campaign approval covers all three. Nothing is sent without that approval. The first email is custom for each contact, built from the research fact for that person, never one body copied across the list. The day 3 and day 7 follow-ups are also written per contact, from the same research.
+Write all three touches for every contact up front. They all appear in the campaign post in chat, and the campaign approval covers all three. Nothing is sent without that approval. The first email is custom for each contact, built from the research fact for that person, never one body copied across the list. The day 3 and day 7 follow-ups are also written per contact, from the same research.
 
 See [follow-up-sequences.md](references/follow-up-sequences.md) for angles and example wording.
 
@@ -156,7 +156,7 @@ Give 1 point for yes, 0 for no. **Pass is 8 out of 10, and a 0 on question 1 or 
 | 9 | The subject is lowercase and 2 to 3 words. |
 | 10 | The owner would send it with their own name on it. |
 
-Score each draft before showing it to the owner, and show the score. Do not trust your own word count when it is close to 90, count the words again. Rewrite any email that fails. Show the final version in the approval email with its fact, its source, and its word count. The owner's approval of the campaign is still required before anything is sent, and an email changed after approval needs a fresh approval.
+Score each draft before showing it to the owner, and show the score. Do not trust your own word count when it is close to 90, count the words again. Rewrite any email that fails. Show the final version in the campaign post with its fact, its source, and its word count. The owner's approval of the campaign is still required before anything is sent, and an email changed after approval needs a fresh approval.
 
 ---
 
@@ -192,6 +192,6 @@ Use this data to inform your writing, not as a checklist to satisfy.
 ## Related Skills
 
 - **prospecting**: For building and qualifying the prospect list that this skill writes outreach against. The natural upstream step before cold-email
-- **outreach-campaign**: The daily campaign, approval by email, sending, and keeping the sending domain safe
+- **outreach-campaign**: The daily campaign, approval in chat, sending, and keeping the sending domain safe
 - **inbox-triage**: What to do with every reply
-- **humanizer**: Run every draft through it before it goes into the approval email
+- **humanizer**: Run every draft through it before it goes into the campaign post

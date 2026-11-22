@@ -1,6 +1,6 @@
 ---
 name: crm-sync
-description: Use whenever Becca needs to read or write a prospect, activity, campaign membership, or status change, or hand an Interested lead to the owner. The local database (or a tracker table where there is no filesystem) holds every prospect, send and campaign. The owner's CRM (Attio, HubSpot, GoHighLevel, Pipedrive, Salesforce, or any other the connector supports) receives only the lead-handoff record, with a CSV or Google Sheet fallback. Also runs the pre-send checks, including campaign approval.
+description: Use whenever Becca needs to read or write a prospect, activity, campaign membership, or status change, or hand an Interested lead to the owner. The local database (or a tracker table where there is no filesystem) holds every prospect, send and campaign. The owner's CRM (Attio, HubSpot, GoHighLevel, Pipedrive, Salesforce, or any other the connector supports) receives only the lead-handoff record, with a CSV or Google Sheet fallback. Also runs the pre-send checks, including campaign approval (given by the owner in chat).
 version: 1.2.0
 author: Vindex Consulting
 license: MIT
@@ -110,9 +110,9 @@ date of each touch, next touch date, reply bucket, notes. Update it after every
 send and every reply, and show the owner the current table when asked so they can
 copy it into a spreadsheet. It does the same job as the local database and must be
 checked the same way before every send. Keep a second small table of campaigns
-(id, name, current version, approved version, status, approval email message id and
-sent time, reminder message id and time, approval reply message id and time,
-approver, last handled message id, contacts). Mark each prospect row with the
+(id, name, current version, approved version, status, approval channel, approval
+message ref and sent time, reminder message ref and time, approval reply ref and
+time, approver (the owner's channel identity), last handled ref, contacts). Mark each prospect row with the
 version and the approved hash.
 
 ## The lead-handoff record
@@ -144,9 +144,10 @@ The campaign version fields live in the local record, not in the CRM. Each
 prospect that enters a campaign carries: the campaign id, the campaign version it
 was included in, and the approved hash of its words (the approval covers exactly
 those words). The campaign itself carries its name, status, current version and
-approved version, the approval email message id and sent time, the reminder message id and time, the
-approval reply message id and time, the approver address, the last handled message
-id and last checked time, and the Instantly campaign id. The approved hash covers
+approved version, the approval channel and owner identity, the approval message ref and sent time
+(the chat post), the reminder message ref and time, the approval reply ref and
+time, the approver (the owner's channel identity), the last handled ref and last
+checked time, and the Instantly campaign id. The approved hash covers
 the email, subject_1 to subject_3, and body_1 to body_3. Write them to the local record. Put
 only the campaign name and id on the CRM record or note when a lead is handed
 off.
@@ -188,18 +189,19 @@ said yes to the draft in a live chat and it is sent, the status becomes
 | Status | Means |
 |---|---|
 | `drafting` | Being built and written. Nothing shown yet |
-| `awaiting_approval` | The approval email was sent, waiting for the owner's reply |
+| `awaiting_approval` | The full campaign was posted in the owner's chat, waiting for the owner's typed approval |
 | `revising` | The owner asked for changes, or words or contacts changed after approval. Next version in progress. On a launched campaign the not-yet-sent leads stay paused and no contact status changes |
 | `approved` | A valid approval was received. Not yet loaded |
 | `loading` | A lock set right before the Instantly upload, so two jobs never load the same campaign twice |
 | `launched` | Loaded into Instantly (or sending started) |
-| `held` | Unapproved after `approval_reminder_days`, reminder sent. No new campaign until the owner replies |
+| `held` | Unapproved after `approval_reminder_days`, reminder posted, or built by a run that could not post and waiting for the owner to open a chat. No new campaign until the owner replies |
 | `completed` | Every touch went out or was cancelled |
 | `cancelled` | Abandoned. Only contacts that were never launched (never loaded) go back to the pool. A campaign with `launched_at` set is never cancelled by crash recovery |
 
-A campaign is `approved` only through the approval gate in `outreach-campaign`.
-Nothing else may set it: not a CRM stage change, not a note, not a prospect's
-reply.
+A campaign is `approved` only through the approval gate in `outreach-campaign`
+(a valid approval typed by the owner in the approval chat). Nothing else may set
+it: not a CRM stage change, not a note, not a prospect's reply, not an email, not
+an emoji (unless the owner turned that on in onboarding).
 
 ## Before every send
 
@@ -207,7 +209,8 @@ This section is about campaign emails. Every campaign email needs an approved
 campaign. Replies to prospects, booking links, and a referral's first email are
 reply drafts (see `inbox-triage`): they are not part of a campaign, they are not
 checked against campaign approval, and they are sent only after the owner's yes
-for that draft in a live chat. The suppression check below still applies to them:
+for that draft in a live chat (typed by the owner, in the same chat as campaign
+approval). The suppression check below still applies to them:
 nobody on the suppression list gets a reply.
 
 Query the local record (database or tracker table) for the email address and
@@ -235,7 +238,7 @@ checks are cheap and the failure they prevent is expensive.
 
 When building a campaign (before it is shown to the owner), run the same checks
 except the campaign status one. Contacts that fail are held back with a reason,
-and `outreach-campaign` lists them in the approval email.
+and `outreach-campaign` lists them in the campaign post in chat.
 
 **Completion criterion:** every prospect in an approved campaign has passed all
 the checks, and the count sent equals the count that passed.
