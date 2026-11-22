@@ -1,7 +1,7 @@
 ---
 name: crm-sync
 description: Use whenever Becca needs to read or write a prospect, activity, campaign membership, or status change, or hand an Interested lead to the owner. The local database (or a tracker table where there is no filesystem) holds every prospect, send and campaign. The owner's CRM (Attio, HubSpot, GoHighLevel, Pipedrive, Salesforce, or any other the connector supports) receives only the lead-handoff record, with a CSV or Google Sheet fallback. Also runs the pre-send checks, including campaign approval (given by the owner in chat).
-version: 1.2.0
+version: 1.3.0
 author: Vindex Consulting
 license: MIT
 metadata:
@@ -111,7 +111,7 @@ send and every reply, and show the owner the current table when asked so they ca
 copy it into a spreadsheet. It does the same job as the local database and must be
 checked the same way before every send. Keep a second small table of campaigns
 (id, name, current version, approved version, status, approval channel, approval
-message ref and sent time, reminder message ref and time, approval reply ref and
+message ref and sent time, reminder ref and time, approval reply ref and
 time, approver (the owner's channel identity), last handled ref, contacts). Mark each prospect row with the
 version and the approved hash.
 
@@ -145,7 +145,7 @@ prospect that enters a campaign carries: the campaign id, the campaign version i
 was included in, and the approved hash of its words (the approval covers exactly
 those words). The campaign itself carries its name, status, current version and
 approved version, the approval channel and owner identity, the approval message ref and sent time
-(the chat post), the reminder message ref and time, the approval reply ref and
+(the chat post) and parts posted, the reminder ref and time, the approval reply ref and
 time, the approver (the owner's channel identity), the last handled ref and last
 checked time, and the Instantly campaign id. The approved hash covers
 the email, subject_1 to subject_3, and body_1 to body_3. Write them to the local record. Put
@@ -191,10 +191,10 @@ said yes to the draft in a live chat and it is sent, the status becomes
 | `drafting` | Being built and written. Nothing shown yet |
 | `awaiting_approval` | The full campaign was posted in the owner's chat, waiting for the owner's typed approval |
 | `revising` | The owner asked for changes, or words or contacts changed after approval. Next version in progress. On a launched campaign the not-yet-sent leads stay paused and no contact status changes |
-| `approved` | A valid approval was received. Not yet loaded |
+| `approved` | A valid approval was received. Not yet loaded. Expires after five days if not loaded |
 | `loading` | A lock set right before the Instantly upload, so two jobs never load the same campaign twice |
 | `launched` | Loaded into Instantly (or sending started) |
-| `held` | Unapproved after `approval_reminder_days`, reminder posted, or built by a run that could not post and waiting for the owner to open a chat. No new campaign until the owner replies |
+| `held` | Unapproved after `approval_reminder_days`, reminder posted, or built by a run that could not post and waiting for the owner to open a chat. No new campaign until the owner replies. Refreshed or cancelled after about seven days |
 | `completed` | Every touch went out or was cancelled |
 | `cancelled` | Abandoned. Only contacts that were never launched (never loaded) go back to the pool. A campaign with `launched_at` set is never cancelled by crash recovery |
 

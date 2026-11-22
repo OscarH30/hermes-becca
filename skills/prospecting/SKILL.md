@@ -1,7 +1,7 @@
 ---
 name: prospecting
 description: Use when Becca needs to find new prospects, build a list, or run the daily prospecting job. Finds contacts that match the ideal buyer profile and the offer using treg.to and/or Apollo, dedupes against the brain, the CRM and the do-not-contact list, researches each contact down to one true sourced fact, skips anyone without a verified email or a verifiable fact, and produces a pool sized for the daily campaign.
-version: 1.2.0
+version: 1.3.0
 author: Vindex Consulting
 license: MIT
 metadata:
