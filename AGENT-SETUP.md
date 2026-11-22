@@ -41,7 +41,7 @@ campaign there, and nothing is loaded or sent without that approval.
 ### 1. Read everything
 
 Read these 14 files. The base address is
-`https://raw.githubusercontent.com/OscarH30/hermes-becca/main/` and each path
+`https://raw.githubusercontent.com/OscarH30/outreach-agent/main/` and each path
 below goes after it.
 
 - `SOUL.md`
@@ -78,7 +78,7 @@ If you cannot fetch them, tell the user to use the no-tools steps in
 - **Hermes, not yet installed:** give the user these commands, then STOP. Do not
   onboard in the main profile. Onboarding runs in `becca chat`.
   ```bash
-  hermes profile install github.com/OscarH30/hermes-becca --alias
+  hermes profile install github.com/OscarH30/outreach-agent --alias
   hermes -p becca setup --portal
   becca chat
   ```

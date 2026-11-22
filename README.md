@@ -1,11 +1,11 @@
-# Becca, your outreach agent
+# Outreach Agent
 
 If you are an AI agent reading this: open AGENT-SETUP.md and follow it.
-Raw URL: https://raw.githubusercontent.com/OscarH30/hermes-becca/main/AGENT-SETUP.md
+Raw URL: https://raw.githubusercontent.com/OscarH30/outreach-agent/main/AGENT-SETUP.md
 
-Becca is the agent's name. Tell your agent: **set up the outreach agent from https://github.com/OscarH30/hermes-becca**
+Tell your agent: **set up the outreach agent from https://github.com/OscarH30/outreach-agent**
 
-That one sentence is the whole start. Your agent reads this repo, installs the
+That one sentence is the whole start. (Inside the files the agent goes by Becca.) Your agent reads this repo, installs the
 skills, and walks you through setup by asking about your business. Becca finds
 the right people, writes cold email that sounds like a person, works the inbox,
 hands interested leads to your CRM, and books calls.
@@ -70,7 +70,7 @@ Pick the one that matches your agent.
 
 1. Open Grok Bot and start a chat with your bot (or create a new one for this).
 2. Paste the sentence above: *set up the outreach agent from
-   https://github.com/OscarH30/hermes-becca*
+   https://github.com/OscarH30/outreach-agent*
 3. It reads `AGENT-SETUP.md` in this repo, saves the skills and rules as its own
    instructions or knowledge, and then runs `onboarding`.
 4. Answer the questions (about 20 minutes). It starts by asking about your
@@ -89,7 +89,7 @@ read links, use the no-tools steps below.
 ### Hermes Agent
 
 ```bash
-hermes profile install github.com/OscarH30/hermes-becca --alias
+hermes profile install github.com/OscarH30/outreach-agent --alias
 hermes -p becca setup --portal   # give this profile a model
 becca chat
 ```
