@@ -1,7 +1,7 @@
 ---
 name: prospecting
 description: Use when Becca needs to find new prospects, build a list, or run the daily prospecting job. Finds contacts that match the ideal buyer profile and the offer using treg.to and/or Apollo, dedupes against the brain, the CRM and the do-not-contact list, researches each contact down to one true sourced fact, skips anyone without a verified email or a verifiable fact, and produces a pool sized for the daily campaign.
-version: 1.2.0
+version: 1.3.0
 author: Vindex Consulting
 license: MIT
 metadata:
@@ -229,7 +229,7 @@ someone replies Interested, so never push pool prospects into it, and never
 enroll anyone in a CRM sequence or workflow. Reading the CRM to dedupe is fine.
 
 The signal and its source are not optional. They are what the cold email is
-built on, and what the owner sees next to every contact in the approval email.
+built on, and what the owner sees next to every contact in the campaign post in chat.
 A prospect with an empty `signal` or `signal_source` is a prospect nobody can
 check or write a good email to. If you could not find them, drop the prospect.
 
@@ -264,8 +264,8 @@ in `brain/config.md` is set, treat it as a floor on how many candidates to
 search per day, not a cap, and never as a reason to ship fewer or weaker
 contacts. Stop adding once the pool already holds `campaign_size` ready
 contacts. Elsewhere, the owner can ask for it any time. The pool goes to
-`outreach-campaign`, which writes the emails and emails the owner one approval
-email. If a campaign is already awaiting approval, or is held, do not run a new
+`outreach-campaign`, which writes the emails and posts the full campaign in the
+owner's chat for approval. If a campaign is already awaiting approval, or is held, do not run a new
 pool build unless the owner asked. The run reports:
 
 ```

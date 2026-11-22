@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS status_history (
     reason       TEXT
 );
 
--- One row per daily campaign. status: drafting | awaiting_approval | revising |
+-- One row per daily campaign, posted in the owner's chat for approval. status: drafting | awaiting_approval | revising |
 -- approved | loading | launched | held | completed | cancelled
 -- (loading is a lock set right before the Instantly upload so two jobs never
 -- load the same campaign twice)
@@ -97,18 +97,26 @@ CREATE TABLE IF NOT EXISTS campaigns (
     status                    TEXT NOT NULL DEFAULT 'drafting',
     segment_note              TEXT,                 -- who this campaign targets and how they were found
     contact_count             INTEGER NOT NULL DEFAULT 0,
-    approval_email            TEXT,                 -- the owner's address the approval went to
-    approval_channel          TEXT,                 -- gmail | outlook | agentmail | platform_email | chat
-    approval_sent_at          TEXT,
-    approval_message_id       TEXT,
-    approval_reply_message_id TEXT,
-    approved_by               TEXT,                 -- verified sender address of the approval reply
+    approval_channel          TEXT,                 -- where the campaign was posted for review: grok_bot_chat | telegram | imessage | slack | whatsapp | discord | hermes_chat | other (1.5.0 databases may hold gmail | outlook | agentmail | platform_email | chat here; kept as is)
+    approval_owner_identity   TEXT,                 -- the owner's immutable id in that channel (user id, member id or number; a handle only as a label); only their typed message counts as approval
+    approval_message_ref      TEXT,                 -- channel-neutral reference to the last message of the posted campaign (the one with the closing line) (message id, link or timestamp)
+    approval_sent_at          TEXT,                 -- when the campaign was posted for review
+    approval_reply_ref        TEXT,                 -- reference to the owner's approval message
+    approved_by               TEXT,                 -- the owner identity the approval message came from (1.5.0 databases hold a sender email address here; kept as is)
     approved_at               TEXT,
     approved_version          INTEGER,              -- the version the owner approved; load only this one
     reminder_sent_at          TEXT,                 -- reset to NULL on every new version
-    reminder_message_id       TEXT,                 -- RFC Message-ID of the reminder Becca sent; reset on every new version; never counts as an approval
-    last_handled_message_id   TEXT,                 -- high-water mark by received time: newest approval-thread message already handled; skip anything at or before it
-    last_checked_at           TEXT,                 -- when the approval inbox was last read for this campaign
+    reminder_ref              TEXT,                 -- reference to the one reminder Becca posted; reset on every new version; never counts as an approval
+    last_handled_ref          TEXT,                 -- high-water mark by time: newest owner message in the approval channel already handled; skip anything at or before it
+    last_checked_at           TEXT,                 -- when the approval channel was last checked for this campaign
+    parts_posted              INTEGER,              -- how many numbered messages the campaign was posted in
+    -- Legacy email columns from 1.5.0. Kept so an existing database upgrades
+    -- without losing anything. Becca 1.6.0 no longer writes them.
+    approval_email            TEXT,                 -- LEGACY (1.5.0): the address the old emailed approval was sent to
+    approval_message_id       TEXT,                 -- LEGACY (1.5.0): RFC Message-ID of the old emailed campaign; see approval_message_ref
+    approval_reply_message_id TEXT,                 -- LEGACY (1.5.0): Message-ID of the approval reply; see approval_reply_ref
+    reminder_message_id       TEXT,                 -- LEGACY (1.5.0): Message-ID of the reminder; see reminder_ref
+    last_handled_message_id   TEXT,                 -- LEGACY (1.5.0): see last_handled_ref
     load_error                TEXT,                 -- why the last load failed, with the date; tell the owner once, do not retry hourly
     instantly_campaign_id     TEXT,
     launched_at               TEXT,                 -- empty means never launched; only then may crash recovery cancel it
@@ -119,7 +127,7 @@ CREATE TABLE IF NOT EXISTS campaigns (
 -- The contacts in a campaign and the exact words shown to the owner for approval.
 -- version is the campaign version the words were last shown in. approved_hash is
 -- a hash of the words shown (email, subject_1..3, body_1..3), set when
--- the approval email is sent. At load time only rows with state included, version
+-- the campaign is posted for review. At load time only rows with state included, version
 -- equal to campaigns.approved_version, and a matching approved_hash are loaded.
 CREATE TABLE IF NOT EXISTS campaign_contacts (
     id           INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -182,8 +190,9 @@ END;
 
 # Columns added after v1.4.0, plus columns added to the new tables during 1.5.0
 # development (campaigns.reminder_message_id, campaign_contacts.subject_2 and
-# subject_3 among them). Each is added only if it is missing, so this is safe on a new
-# database and on an old one.
+# subject_3 among them), plus the channel-neutral approval columns added in
+# 1.6.0. Each is added only if it is missing, so this is safe on a new
+# database and on an old one. Nothing here ever drops or rewrites a column.
 MIGRATIONS = [
     ("sends", "campaign_id", "TEXT"),
     ("replies", "campaign_id", "TEXT"),
@@ -201,6 +210,15 @@ MIGRATIONS = [
     ("campaign_contacts", "approved_hash", "TEXT"),
     ("campaign_contacts", "subject_2", "TEXT"),
     ("campaign_contacts", "subject_3", "TEXT"),
+    # Added in 1.6.0: campaign approval happens in chat. These are
+    # channel-neutral. The 1.5.0 email columns stay in place as legacy and are
+    # never dropped.
+    ("campaigns", "approval_owner_identity", "TEXT"),
+    ("campaigns", "approval_message_ref", "TEXT"),
+    ("campaigns", "approval_reply_ref", "TEXT"),
+    ("campaigns", "reminder_ref", "TEXT"),
+    ("campaigns", "last_handled_ref", "TEXT"),
+    ("campaigns", "parts_posted", "INTEGER"),
 ]
 
 # Indexes on migrated columns must be created after the migration.
@@ -208,6 +226,19 @@ POST_MIGRATION = """
 CREATE INDEX IF NOT EXISTS idx_sends_campaign ON sends(campaign_id);
 CREATE INDEX IF NOT EXISTS idx_replies_campaign ON replies(campaign_id);
 """
+
+
+# Copy 1.5.0 references into the channel-neutral columns, only where the new
+# column is still empty. The old columns are left untouched. approved_by and
+# approval_channel keep their 1.5.0 values as they are. The old email address is
+# deliberately not copied into approval_owner_identity: an email address is not
+# the owner's identity in a chat channel, and onboarding records that fresh.
+BACKFILL = [
+    ("approval_message_ref", "approval_message_id"),
+    ("approval_reply_ref", "approval_reply_message_id"),
+    ("reminder_ref", "reminder_message_id"),
+    ("last_handled_ref", "last_handled_message_id"),
+]
 
 
 def migrate(conn: sqlite3.Connection) -> list:
@@ -218,6 +249,13 @@ def migrate(conn: sqlite3.Connection) -> list:
             conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {decl}")
             added.append(f"{table}.{column}")
     conn.executescript(POST_MIGRATION)
+    campaign_cols = {row[1] for row in conn.execute("PRAGMA table_info(campaigns)")}
+    for new, old in BACKFILL:
+        if new in campaign_cols and old in campaign_cols:
+            conn.execute(
+                f"UPDATE campaigns SET {new} = {old} "
+                f"WHERE {new} IS NULL AND {old} IS NOT NULL"
+            )
     return added
 
 
