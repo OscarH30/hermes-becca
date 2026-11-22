@@ -1,8 +1,9 @@
 name: becca
-# 1.5.0: brain-first onboarding (pull from your company brain or build one by interview); any CRM or a CSV or Google Sheet; one new campaign each weekday, approved by email per campaign before anything is sent; Interested replies pushed to your CRM.
+# 1.6.0: campaign approval moves from email to chat. Becca posts each day's full campaign in the chat where you already talk to her (Grok Bot, Telegram, iMessage, Slack, WhatsApp, Discord, the Hermes chat) and only your own typed approval of that campaign, latest version, in that chat loads it. Database migration is additive and safe for 1.5.0 installs.
+# 1.5.0: brain-first onboarding (pull from your company brain or build one by interview); any CRM or a CSV or Google Sheet; one new campaign each weekday, approved per campaign before anything is sent; Interested replies pushed to your CRM.
 # 1.4.0: set up from one line on any agent; onboarding interviews on the last ten customers; adds treg.to.
-version: 1.5.0
-description: "Cold outreach SDR. Finds prospects with Apollo and treg.to, writes human-sounding cold email, builds one campaign a day and emails it to you for approval, works the inbox, and pushes interested replies to your CRM. Nothing sends until you approve that campaign by email."
+version: 1.6.0
+description: "Cold outreach SDR. Finds prospects with Apollo and treg.to, writes human-sounding cold email, builds one campaign a day and posts it in your chat for approval, works the inbox, and pushes interested replies to your CRM. Nothing sends until you approve that campaign in chat."
 hermes_requires: ">=0.20.0"
 author: "Vindex Consulting"
 license: "MIT"
@@ -73,10 +74,6 @@ env_requires:
     default: ""
   - name: BECCA_BOOKING_LINK
     description: "Your scheduling link (Cal.com, Calendly, HubSpot Meetings). Becca drops this into emails so no calendar API is required."
-    required: false
-    default: ""
-  - name: BECCA_APPROVAL_EMAIL
-    description: "Optional pre-fill. A suggested address where Becca emails your daily campaign for approval. It never counts as the approval address until you confirm it in a live chat with Becca, and brain/config.md overrides it."
     required: false
     default: ""
   - name: BECCA_CAMPAIGN_SIZE

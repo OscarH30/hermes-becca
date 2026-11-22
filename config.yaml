@@ -24,13 +24,15 @@ agent:
 #
 # These are defaults and documentation only. The skills read brain/config.md,
 # not this file. The owner's real values live in brain/config.md (written at
-# onboarding) and win over anything here. Leave approval_email blank:
-# onboarding asks the owner for it in a live chat and records it. A value here
-# or in .env never counts as the approval address.
+# onboarding) and win over anything here. Leave approval_channel and
+# approval_owner_identity blank: onboarding fills them in from the chat where the
+# owner actually talks to Becca. A value here or in .env never counts as the
+# approval channel or as the owner's identity.
 # ---------------------------------------------------------------------
 becca:
-  approval_email: ""          # where the daily campaign is sent for approval
-  approval_channel: ""        # gmail | outlook | agentmail | platform_email | chat
+  approval_channel: ""        # blank until onboarding fills it with the chat where the owner talks to Becca: grok_bot_chat | telegram | imessage | slack | whatsapp | discord | hermes_chat | other
+  approval_owner_identity: "" # the owner's own identity in that channel (handle, user id or number); only their typed message counts as approval
+  approval_reaction_ok: false # false = an emoji or reaction alone never approves; true only if the owner set that up explicitly in onboarding
   campaign_size: 50           # ceiling on contacts per daily campaign; onboarding sizes it to sending capacity
   first_campaign_size: 10     # the first campaign after onboarding is smaller
   approval_reminder_days: 3   # one reminder after this many days, then the campaign is held
