@@ -31,7 +31,7 @@ agent:
 # ---------------------------------------------------------------------
 becca:
   approval_channel: ""        # blank until onboarding fills it with the chat where the owner talks to Becca: grok_bot_chat | telegram | imessage | slack | whatsapp | discord | hermes_chat | other
-  approval_owner_identity: "" # the owner's own identity in that channel (handle, user id or number); only their typed message counts as approval
+  approval_owner_identity: "" # the owner's immutable id in that channel (Telegram numeric id, Slack member id, phone number), not a handle; only their typed message counts as approval
   approval_reaction_ok: false # false = an emoji or reaction alone never approves; true only if the owner set that up explicitly in onboarding
   campaign_size: 50           # ceiling on contacts per daily campaign; onboarding sizes it to sending capacity
   first_campaign_size: 10     # the first campaign after onboarding is smaller

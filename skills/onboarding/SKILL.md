@@ -1,7 +1,7 @@
 ---
 name: onboarding
 description: Use when Becca is first installed, when brain/business.md is missing, or when the owner says "onboard", "onboard me", "set me up", "start over", "upgrade my database", or "you don't know my business yet". Asks first whether the owner already has a company brain to pull contacts and context from (or builds a starter one by interview), asks which CRM they use and where they usually talk to Becca (the chat where each day's campaign is posted for approval), connects their tools one at a time, and ends with the first campaign (ten contacts or fewer) posted in that chat for the owner's approval.
-version: 1.3.0
+version: 1.3.1
 author: Vindex Consulting
 license: MIT
 metadata:
@@ -298,20 +298,32 @@ WhatsApp, Discord or the Hermes chat. Record it as `grok_bot_chat`, `telegram`,
 the chat onboarding is happening in, and confirm it. Never suggest email as the
 place to approve campaigns.
 
-Then record `approval_owner_identity`: the owner's own identity in that channel
-(their handle, user id or number), taken from the channel itself, not typed
-from memory when the channel can show it. Only a message from that identity
-counts as the owner.
+Then record `approval_owner_identity`: the owner's own identity in that channel,
+taken from the channel itself rather than typed from memory. Prefer an id that
+cannot be changed over a handle that can: a Telegram numeric user id, a Slack
+member id, a Discord user id, a phone number. Record the handle or display name
+only as a label next to it, because a name can be changed or copied by someone
+else. Only a message from that identity counts as the owner.
 
 Ask one more thing: *"Should a thumbs-up or other reaction ever count as
 approval?"* The default is no. Set `approval_reaction_ok: true` only if the
 owner says yes in their own words, and record those words. With the default, an
 emoji or reaction alone never approves anything.
 
-If this is a group chat (a Slack channel, a Telegram group, a shared thread),
-say so plainly: *"In a group, only your own typed message counts as approval,
-never anyone else's, and never a message you forwarded or quoted. If you can,
-use a one-to-one chat with me for approvals."*
+**Group chats.** A group chat (a Slack channel, a Telegram or WhatsApp group, a
+shared thread) can be the approval channel only if the platform gives you a
+verified sender id on every message. If it does not, refuse it: *"I can't tell
+who is typing in a group here, so I can't take approvals there. Let's use a
+one-to-one chat with me, or a platform that shows who sent each message."* Ask
+for the one-to-one chat and run the test in 4.3 there. If onboarding itself is
+happening in a group, take `approval_owner_identity` from the sender who ran
+onboarding and gave the `owner_said` yes, never from whoever happens to reply to
+a test message. Even where a group works, only the owner's own typed message
+counts, never anyone else's and never a forwarded or quoted message.
+
+Tell the owner about group privacy too: the campaign, the daily summary and any
+reply drafts all contain prospect names, emails and reply text, so everyone in a
+group would see them. Recommend a one-to-one chat for all of it.
 
 Say how approval works, in plain words:
 
@@ -322,10 +334,17 @@ Say how approval works, in plain words:
 > the latest version can be approved.
 
 If you are running on a schedule with no live chat open, Becca posts the
-campaign to the owner's connected chat channel if one exists (Hermes can connect
-gateways such as Telegram or Slack, so ask the owner whether one is set up), and
-otherwise holds it and shows it the next time the owner opens a chat. Becca never
-falls back to email approval.
+campaign to the owner's connected chat channel if one exists, and otherwise holds
+it and shows it the next time the owner opens a chat. Becca never falls back to
+email approval.
+
+> **Hermes note.** Hermes can connect messaging gateways such as Telegram or
+> Slack, but a scheduled run can only post to the owner's chat if that job's
+> delivery target is set to the same gateway as `approval_channel`, and it has a
+> send tool that returns a message reference. Ask the owner whether that is set
+> up, and check what your install actually offers rather than assuming. If it is
+> not set up, scheduled runs build the campaign and hold it until the owner
+> opens a chat.
 
 Also ask the size. `campaign_size` is a ceiling (default 50), and the first
 campaign is `first_campaign_size: 10`. What the setup can actually send decides
@@ -532,21 +551,27 @@ inboxes and never to a prospect.
 Test it. In the approval channel, post one short message ("This is a test from
 Becca. Please type one sentence of your own, for example what you had for
 lunch."), and read the reply. Becca's own message does not count. Accept only a
-new message that the channel shows as coming from the owner (read the sender
-identity from the channel itself), typed as a reply in that chat, and not a
-forward, a quote or pasted text. Record that sender identity as
-`approval_owner_identity`. This test approves nothing.
+new message that the channel shows as coming from the owner (read the sender id
+from the channel itself), typed as a reply in that chat, and not a forward, a
+quote or pasted text. Record that sender id as `approval_owner_identity`, with
+the handle as a label only. This test approves nothing.
 
-If the approval channel is the same chat you are onboarding in, the owner's reply
-there is the test. If it is a different chat (for example the owner talks to Becca
-in Telegram but is onboarding in the Hermes chat) and you cannot post to it from
-here, do not guess: record the chat you are in as `approval_channel`, and tell the
-owner they can move approvals later by saying so in a live chat with Becca, which
-re-runs this test.
+Run the test one-to-one. A group chat with no verified sender id can never be the
+approval channel (see 3.2). If onboarding is happening in a group, do not take the
+identity from whoever answers the test there: take it from the sender who ran
+onboarding and gave the `owner_said` yes, and confirm it in the one-to-one chat.
 
-If the channel cannot show who sent a message (some bridges only relay text),
-say so, record `approval_owner_identity: owner (this chat only)`, and treat only
-messages that arrive typed in this one-to-one chat as the owner's.
+If the approval channel is the same one-to-one chat you are onboarding in, the
+owner's reply there is the test. If it is a different chat (for example the owner
+talks to Becca in Telegram but is onboarding in the Hermes chat) and you cannot
+post to it from here, do not guess: record the chat you are in as
+`approval_channel`, and tell the owner they can move approvals later by saying so
+in a live chat with Becca, which re-runs this test.
+
+If a one-to-one channel cannot show who sent a message (some bridges only relay
+text), say so and record `approval_owner_identity: owner (this one-to-one chat
+only)`. That value is accepted only for a one-to-one chat where nobody else can
+type. It is never accepted for a group.
 
 A scheduled run with no live chat open cannot be approved. It posts the campaign
 to the connected chat channel if one exists, and otherwise holds it until the
@@ -591,9 +616,9 @@ Record it in `brain/access.md`:
 
 - system: approval
   approval_channel: telegram       # grok_bot_chat | telegram | imessage | slack | whatsapp | discord | hermes_chat | other
-  approval_owner_identity: "@jordanlee"   # the owner's own identity in that channel, read from the channel
+  approval_owner_identity: "id:482910374"   # the owner's own id in that channel, read from the channel (handle: "@jordanlee" kept only as a label)
   approval_reaction_ok: false      # true only if the owner asked for it in their own words
-  verified_as: "test reply typed by @jordanlee in this chat"
+  verified_as: "test reply typed by id:482910374 (@jordanlee) in this one-to-one chat"
   owner_said: "I talk to you here on Telegram, post the campaign here"   # typed by the owner in a live chat
 
 - system: prospecting
@@ -645,7 +670,7 @@ campaign_size: 13        # a ceiling on contacts per daily campaign (default 50)
                          # (sending inboxes x daily_send_cap) / 3, so 2 inboxes at 20 is about 13 a day
 first_campaign_size: 10  # the first campaign after onboarding
 approval_channel: telegram   # grok_bot_chat | telegram | imessage | slack | whatsapp | discord | hermes_chat | other: the chat where each campaign is posted and approved
-approval_owner_identity: "@jordanlee"   # the owner's own identity in that channel; only their typed message counts as approval
+approval_owner_identity: "id:482910374"   # the owner's immutable id in that channel (Telegram numeric id, Slack member id, phone number...), not a handle; only their typed message counts as approval
 approval_reaction_ok: false  # false = an emoji or reaction alone never approves; true only if the owner set it up in onboarding
 approval_reminder_days: 3   # one reminder, then the campaign is held until the owner replies
 treg_daily_spend_cap: 0  # most you allow treg.to to spend in one unattended (scheduled) run, in the price units treg.to shows. 0 = off: scheduled runs skip treg.to.
@@ -708,9 +733,11 @@ record the `system: approval` entry in `brain/access.md` and the new keys
 (`approval_channel`, `approval_owner_identity`, `approval_reaction_ok`) in
 `brain/config.md` (4.6), then run `scripts/init_db.py` again on the existing
 database (it keeps the data and adds the new columns). From 1.5.0, remove the
-old emailed-approval setting from `brain/config.md`. Email approval no longer exists: a
-campaign that was waiting on an emailed approval is held and reposted in the chat
-as a new version, and an earlier email reply never approves it.
+old emailed-approval setting from `brain/config.md`. Email approval no longer
+exists. A campaign that was `awaiting_approval` or `approved` under the old email flow is set to
+`revising` with its approval references cleared, and is reposted in the chat as a
+new version. It is never loaded on the strength of an email approval; the
+`outreach-campaign` skill enforces that at load time.
 
 If you have no filesystem, keep a prospect tracker (a spreadsheet, a table in a
 saved note, or a table the owner can see) with one row per prospect, including
@@ -742,9 +769,9 @@ for warmup. Never build a campaign with zero contacts. In short:
    (`approval_channel`) as the `outreach-campaign` skill specifies: the campaign
    name and id and version, who it targets, every contact with their emails, and
    what was held back. If it is long, split it into numbered messages and say how
-   many parts, with a short summary first. End with: "Type your approval naming
-   this campaign (for example: approve Acme Plumbing Week 1, C20261121-1 v1) to
-   load and send it, or tell me what to change."
+   many parts, with a short summary first. End with exactly this line, with the
+   real id and version filled in:
+   "Type approve <campaign id> v<n> to load and send this campaign, or tell me what to change."
 4. **Do not load, schedule or send anything.** Say that out loud. Approval is for
    this campaign and its latest version only, typed by the owner (the
    `approval_owner_identity`) in the approval channel, naming the campaign. Not
@@ -769,6 +796,8 @@ for warmup. Never build a campaign with zero contacts. In short:
      cap and warmup and runs the day 3 and day 7 follow-ups.
    - Replies are sorted into seven buckets. Interested leads go to the owner's
      CRM (or the CSV or Google Sheet) and are listed in the daily summary.
+   - Whenever the owner opens a chat, and any campaign is held, awaiting
+     approval or approved, Becca presents it first, before anything else.
    - If a campaign is not approved after `approval_reminder_days` (3) days, she
      posts one reminder, then holds until the owner replies. Only one campaign
      waits at a time.

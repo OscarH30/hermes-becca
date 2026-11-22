@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS campaigns (
     segment_note              TEXT,                 -- who this campaign targets and how they were found
     contact_count             INTEGER NOT NULL DEFAULT 0,
     approval_channel          TEXT,                 -- where the campaign was posted for review: grok_bot_chat | telegram | imessage | slack | whatsapp | discord | hermes_chat | other (1.5.0 databases may hold gmail | outlook | agentmail | platform_email | chat here; kept as is)
-    approval_owner_identity   TEXT,                 -- the owner's own identity in that channel (handle, user id or number); only their typed message counts as approval
+    approval_owner_identity   TEXT,                 -- the owner's immutable id in that channel (user id, member id or number; a handle only as a label); only their typed message counts as approval
     approval_message_ref      TEXT,                 -- channel-neutral reference to the last message of the posted campaign (the one with the closing line) (message id, link or timestamp)
     approval_sent_at          TEXT,                 -- when the campaign was posted for review
     approval_reply_ref        TEXT,                 -- reference to the owner's approval message
