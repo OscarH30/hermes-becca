@@ -12,10 +12,10 @@ hands interested leads to your CRM, and books calls.
 
 **Every email goes out in your name, not hers.** She writes as you, the owner or
 CEO, and signs with your signature. Each weekday she builds one campaign of up to
-50 contacts and emails it to you. **You approve that campaign by replying, then
-she sends it** (or you send by hand). Nothing is loaded or sent without your
-approval of that specific campaign. That is the rule and she does not drift out
-of it.
+50 contacts and posts it in your chat, where you already talk to your agent.
+**You approve that campaign right there, then she sends it** (or you send by
+hand). Nothing is loaded or sent without your approval of that specific
+campaign. That is the rule and she does not drift out of it.
 
 ---
 
@@ -31,23 +31,28 @@ of it.
 3. **Write.** She writes a custom first email per contact (under 90 words, one
    small ask) plus a day 3 and a day 7 follow-up, in your voice. Three touches,
    then stop.
-4. **Daily campaign approval by email.** She builds one new campaign of up to 50
-   contacts and emails you one approval email: who they are, every contact with
-   its custom first email, and the plan. You reply **APPROVE** (from your approval
-   address, to that email), or reply with changes and she revises and resends.
-   Only then does it load into Instantly and send, within the daily cap.
+4. **Daily campaign approval in chat.** Each weekday Becca posts one campaign (up
+   to about 50 contacts) in your chat, Grok Bot, Telegram, iMessage, Slack,
+   wherever you talk to it. You review the whole campaign and approve it right
+   there. Only then does it load and send through Instantly.
 5. **Replies to your CRM.** Replies come back in Instantly and are sorted into
    seven buckets. Interested leads go to your CRM (or a Google Sheet or CSV if
    you have none) and are listed in the daily summary. Your team takes it from
    there. The CRM gets only your hot leads. Every prospect and every send stays in
    her own database, so nothing in your CRM can be emailed by accident. Any
    reply she drafts to a prospect waits in the daily summary for your yes, typed
-   by you in a live chat, one yes per draft.
+   by you in that same live chat, one yes per draft.
 
 How big is a campaign? Up to 50 is the ceiling. Each contact gets three emails,
 so the real number is about (sending inboxes x daily cap per inbox) / 3 new
-contacts a day. Onboarding works it out with you, and each approval email says
-what the campaign was sized to.
+contacts a day. Onboarding works it out with you, and each campaign she posts says
+what it was sized to. A long campaign comes as numbered parts ("Part 2 of 4") or
+a file if your chat supports attachments, with a short summary on top. Approval
+is you typing a message of your own that names the campaign (its name or id)
+and the latest version. Silence, a thumbs up on its own, a message from someone
+else in a group chat, or the word "approve" inside something pasted or forwarded
+does not count. If you ask for changes she posts a new version and only that one
+can be approved.
 
 ---
 
@@ -63,13 +68,12 @@ Pick the one that matches your agent.
 3. It reads `AGENT-SETUP.md` in this repo, saves the skills and rules as its own
    instructions or knowledge, and then runs `onboarding`.
 4. Answer the questions (about 20 minutes). It starts by asking about your
-   company brain, then your CRM and the email address where your daily campaign
-   goes. It walks you through connecting each tool below, one at a time, using
+   company brain, then your CRM and where you usually talk to her, which is where
+   she posts your daily campaign. It walks you through connecting each tool below, one at a time, using
    the connection options in your bot's own settings.
 
-A bot that cannot check email on its own has no schedule. After you reply to
-the approval email, tell it **"check my approval"** and it looks for your reply
-then.
+A bot with no schedule of its own posts the campaign when you open the chat.
+Say **"show me today's campaign"**, read it, and approve it in the same chat.
 
 Menu names in Grok Bot change over time. If the agent points you at a settings
 page, look for the closest match to what it describes. If your bot has no
@@ -115,10 +119,10 @@ For agents that cannot open links or connect tools:
    version, replace the old file. These projects forget between chats, and this
    file is how she remembers your business.
 
-In this mode there is no email channel and no scheduled run. Becca shows you the
-full campaign in chat, you approve it by typing a message of your own that names
-the campaign id and version (pasted text never counts), and you paste and send
-by hand. Everything else, the research, the voice, the three-touch sequence and
+In this mode there is no scheduled run. Becca shows you the full campaign in
+that chat, you approve it by typing a message of your own that names the
+campaign and its version (pasted text never counts), and you paste and send by
+hand. Everything else, the research, the voice, the three-touch sequence and
 the reply sorting, works the same.
 
 ---
@@ -127,8 +131,8 @@ the reply sorting, works the same.
 
 Sign up for these, connect them to your agent, and go. Onboarding goes through
 them in this order, one at a time: Apollo and/or treg.to, Instantly (with Google
-Workspace inboxes on lookalike domains), the email channel she uses to send you
-the daily campaign, your CRM (whichever one you use), Cal.com or Calendly, then
+Workspace inboxes on lookalike domains), the chat where she posts your daily
+campaign (the one you already use), your CRM (whichever one you use), Cal.com or Calendly, then
 Composio as the connector layer where your platform supports it. You connect
 each app on its own sign-in page. You never paste a password or API key into the
 chat.
@@ -146,10 +150,10 @@ the lookalike sending domain. Check each tool's pricing page before you sign up.
 | Composio | https://composio.dev | connects Apollo, Instantly, your CRM, Gmail to your agent through secure sign-in (OAuth) | Recommended for Hermes; optional elsewhere | you make an account, then connect each app on Composio's own connect page (OAuth, or a key you enter there), never in chat |
 | Cal.com | https://cal.com | booking link for interested replies (Calendly also works) | Optional | you give your public booking link, nothing else |
 
-The email channel for your daily campaign is separate from the warmed Instantly
-inboxes. It can be your own connected Gmail or Outlook, AgentMail, or your
-platform's own email. If none is available, she shows the campaign in chat
-instead, which is a fallback.
+The chat where she posts your daily campaign is the one you already use: Grok
+Bot chat, Telegram, iMessage, Slack, WhatsApp, Discord, the Hermes chat or
+similar. It is separate from the warmed Instantly inboxes, and she never uses
+email to ask you for approval.
 
 If a tool needs a key and offers no sign-in, the agent tells you where to put it
 securely (in Hermes, the profile's `.env` file; elsewhere, the platform's
@@ -163,7 +167,7 @@ secrets or connector settings). Never in the chat.
 |---|---|---|
 | An outreach agent with a job description it follows every time | the rules in `SOUL.md` and the job description in `AGENT-SETUP.md` | all of them |
 | A one-page ideal buyer profile built from your last ten wins, not your pitch deck | the onboarding interview, saved as `brain/icp.md` | `onboarding` |
-| Ten researched cold emails, under 90 words, one small ask | your first campaign is ten contacts or fewer: find, verify and research them, write and score the drafts, and email them to you for approval. Daily campaigns after that are about 50 | `prospecting`, `cold-email`, `humanizer`, `outreach-campaign` |
+| Ten researched cold emails, under 90 words, one small ask | your first campaign is ten contacts or fewer: find, verify and research them, write and score the drafts, and post them in your chat for approval. Daily campaigns after that are about 50 | `prospecting`, `cold-email`, `humanizer`, `outreach-campaign` |
 | A three-touch sequence that follows up without sounding pushy | day 1, day 3, day 7, then stop. One campaign approval covers all three touches | `cold-email`, `outreach-campaign` |
 | A reply playbook | sorts every reply into seven buckets: Interested, Question, Not now, Referral, No, Stop, Auto-reply | `inbox-triage` |
 | A checklist for protecting your main email address | lookalike domains, SPF, DKIM, DMARC, warmup, daily caps | `outreach-campaign`, `onboarding` |
@@ -179,8 +183,8 @@ A fresh Becca can reach nothing: no Apollo, no inbox, no CRM, no calendar. That
 is not a broken install. It is the design. Onboarding is where you give
 her access, one tool at a time, the way you would with a new hire, and you do it
 on each tool's own sign-in page. It takes about 20 minutes. She asks about your
-company brain first, then which CRM you use and which email address your daily
-campaign should go to. She connects each tool, and reads the sending address
+company brain first, then which CRM you use and where you usually talk to her,
+so she knows where to post your daily campaign. She connects each tool, and reads the sending address
 back to you from the mailbox itself before a single draft is written. Until
 sending is connected she cannot email anyone, so she cannot email the wrong
 people from the wrong address.
@@ -199,7 +203,7 @@ lookalike domains, one to three inboxes on each in your name, all connected to
 Instantly and warmed for two to three weeks. If they are not ready she records
 `sending: pending`, tells you what is left to set up, and carries on with the
 other tools and the first task. She loads and sends nothing until Instantly
-shows warmed inboxes and you have approved that specific campaign by email. In
+shows warmed inboxes and you have approved that specific campaign in chat. In
 the meantime you can send the first ten by hand.
 
 ---
@@ -238,12 +242,17 @@ hermes -p becca cron tick      # activate the schedule
 | When | What |
 |---|---|
 | Weekdays 8:00 | Daily prospecting: finds and researches contacts that match your ideal buyer profile and your offer |
-| Weekdays 9:00 | Daily campaign for approval: builds one campaign of up to 50 contacts, writes every email, **emails it to you for approval** |
-| Weekdays, hourly | Campaign approval check: looks for your approval reply, posts a one-line status each run, and only reports more when something changed. Loads and sends only a campaign you approved, from your approval address |
+| Weekdays 9:00 | Daily campaign for approval: builds one campaign of up to 50 contacts, writes every email, **posts it to your connected chat channel for approval** |
+| Weekdays, hourly | Campaign approval check: looks in your chat for your approval, posts a one-line status each run, and only reports more when something changed. Loads and sends only a campaign you approved there |
 | Every 2 hours | Inbox sweep: opt-outs first, stops sequences on reply, drafts responses, sends interested leads to your CRM |
 
 She builds a new campaign only when none is waiting for your approval. If you
-have not replied after 3 days she sends one reminder, then holds.
+have not approved after 3 days she sends one reminder, then holds. A scheduled
+run cannot hold a live conversation, so it posts to your connected chat channel
+if you have one (Hermes can connect messaging gateways such as Telegram or
+Slack, depending on your setup). If none is connected, she holds the campaign
+and shows it the next time you open a chat. She never falls back to email. The
+daily summary goes to the same chat.
 
 Change any of it: `becca` then *"run prospecting at 7 instead"*.
 
@@ -257,10 +266,11 @@ Your `brain/`, memories, sessions, `.env`, prospect database and the tools you
 connected are never touched. Updates change how she works, never what she can
 reach.
 
-Coming from 1.4.0? After the update, tell Becca **"upgrade my database"**. She
-runs `scripts/init_db.py` (safe to re-run, it keeps your data) and asks the
-approval questions again, connects and tests your approval channel, records your
-approval email, your CRM and your campaign size, and then upgrades the database.
+Coming from 1.4.0 or 1.5.0? After the update, tell Becca **"upgrade my database"**.
+She runs `scripts/init_db.py` (safe to re-run, it keeps your data and old email
+columns) and asks where you usually talk to her, records that as your approval
+channel along with who you are in it, confirms your CRM and your campaign size,
+and then upgrades the database.
 
 ---
 
@@ -268,11 +278,11 @@ approval email, your CRM and your campaign size, and then upgrades the database.
 
 | Skill | What it does |
 |---|---|
-| `onboarding` | Starts from your company brain (or builds one), asks your CRM and approval email, connects your tools, writes `brain/` |
+| `onboarding` | Starts from your company brain (or builds one), asks your CRM and where you talk to her (your approval channel), connects your tools, writes `brain/` |
 | `prospecting` | Search, enrich, verify, dedupe, store |
 | `cold-email` | Writes the email *(adapted from [Corey Haines](https://github.com/coreyhaines31/marketingskills), MIT)* |
 | `humanizer` | Strips the AI tells before you see a draft *(by [blader](https://github.com/blader/humanizer), MIT)* |
-| `outreach-campaign` | Builds the daily campaign, emails it to you for approval, loads and sends only what you approved, schedules follow-ups |
+| `outreach-campaign` | Builds the daily campaign, posts it in your chat for approval, loads and sends only what you approved, schedules follow-ups |
 | `inbox-triage` | Sorts replies, handles opt-outs, drafts responses |
 | `crm-sync` | Pushes interested leads to whatever CRM you use (Attio, HubSpot, GoHighLevel, Pipedrive and others), or to a CSV or Google Sheet |
 | `booking` | Gets the call on the calendar |
@@ -289,7 +299,7 @@ files or saved notes. They are plain Markdown. Edit them any time.
 | `icp.md` | Your ideal buyer profile and the trigger events worth searching for |
 | `voice.md` | How you sound, and emails of yours that worked |
 | `access.md` | What you connected, and the words you confirmed it with |
-| `config.md` | Send caps, sequence spacing, bounce pause, your approval email, campaign size, your CRM and the CSV or Google Sheet fallback |
+| `config.md` | Send caps, sequence spacing, bounce pause, your approval channel and your identity in it, campaign size, your CRM and the CSV or Google Sheet fallback |
 | `suppression.md` | Never-contact list |
 | `rules.md` | What she has learned from your corrections |
 
@@ -299,9 +309,14 @@ files or saved notes. They are plain Markdown. Edit them any time.
 
 ## Version
 
+**1.6.0** moves campaign approval from email into your chat. Becca posts the
+daily campaign in Grok Bot, Telegram, iMessage, Slack or wherever you talk to
+her, and sends only after you type an approval that names that campaign and its
+latest version. The daily summary and reply drafts use the same chat.
+
 **1.5.0** starts onboarding from your company brain, adds a daily campaign of
-up to 50 contacts that is emailed to you and sent only after you reply APPROVE
-for that campaign, and pushes interested leads to whatever CRM you use (or a CSV
+up to 50 contacts that needs your approval of that specific campaign before it
+is sent, and pushes interested leads to whatever CRM you use (or a CSV
 or Google Sheet).
 
 **1.4.0** added the one-line start for any agent, `AGENT-SETUP.md`, a named
